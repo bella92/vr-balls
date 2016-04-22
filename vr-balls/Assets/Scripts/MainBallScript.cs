@@ -18,7 +18,7 @@ public class MainBallScript : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || cardboard.Triggered)
+        if (Input.GetKeyDown(KeyCode.Space) || (cardboard != null && cardboard.Triggered))
         {
             Fire();
             ChangeColor();
@@ -30,8 +30,13 @@ public class MainBallScript : MonoBehaviour
         GameObject ball = (GameObject)Instantiate(ballPrefab, transform.position, transform.rotation);
         ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
 
-        Vector3 gazeDirection = cardboardHead.Gaze.direction;
-        ball.GetComponent<Rigidbody>().velocity = gazeDirection * 6.0f;
+        Vector3 direction = transform.forward;
+        if (cardboardHead)
+        {
+            direction = cardboardHead.Gaze.direction;
+        }
+        
+        ball.GetComponent<Rigidbody>().velocity = direction * 6.0f;
 
         Destroy(ball, 1);
     }
