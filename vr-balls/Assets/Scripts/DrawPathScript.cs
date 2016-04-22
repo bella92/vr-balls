@@ -4,37 +4,73 @@ using System;
 
 public class DrawPathScript : MonoBehaviour
 {
+    public GameObject cylinderRef;
+
     private iTweenPath path;
     private LineRenderer lineRenderer;
 
     void Start()
     {
         path = GetComponent<iTweenPath>();
-        lineRenderer = GetComponent<LineRenderer>();
-        
+
         Vector3[] nodes = iTweenPath.GetPath(path.pathName);
         Vector3[] vector3s = PathControlPointGenerator(nodes);
 
-        //Line Draw:
+        //DrawLine(vector3s, nodes.Length);
+        DrawTube(vector3s, nodes.Length);
+    }
+
+    private void DrawLine(Vector3[] vector3s, int nodesLength)
+    {
+        lineRenderer = GetComponent<LineRenderer>();
+
         Vector3 prevPt = Interp(vector3s, 0);
         lineRenderer.SetPosition(0, prevPt);
         lineRenderer.SetWidth(0.1f, 0.1f);
         lineRenderer.SetColors(Color.red, Color.red);
 
-        //Gizmos.color = color;
-        int smoothAmount = nodes.Length * 20;
+        int smoothAmount = nodesLength * 20;
         lineRenderer.SetVertexCount(smoothAmount + 1);
 
-        Debug.Log(smoothAmount);
         for (int i = 1; i <= smoothAmount; i++)
         {
-            Debug.Log(i);
             float pm = (float)i / smoothAmount;
             Vector3 currPt = Interp(vector3s, pm);
-            //Gizmos.DrawLine(currPt, prevPt);
+
             lineRenderer.SetPosition(i, currPt);
+
             prevPt = currPt;
         }
+    }
+
+    private void DrawTube(Vector3[] vector3s, int nodesLength)
+    {
+        Vector3 prevPt = Interp(vector3s, 0);
+        
+        int smoothAmount = nodesLength * 20;
+        
+        for (int i = 1; i <= smoothAmount; i++)
+        {
+            float pm = (float)i / smoothAmount;
+            Vector3 currPt = Interp(vector3s, pm);
+
+            DrawCylinderBetweenTwoPoints(prevPt, currPt);
+
+            prevPt = currPt;
+        }
+    }
+
+    private void DrawCylinderBetweenTwoPoints(Vector3 start, Vector3 end)
+    {
+        GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+
+        Vector3 localScale = cylinder.transform.localScale;
+        float distance = Vector3.Distance(start, end) / 2;
+        cylinder.transform.localScale = new Vector3(0.2f, distance, 0.2f);
+
+        cylinder.transform.position = start;
+        cylinder.transform.LookAt(end);
+        cylinder.transform.Rotate(new Vector3(1, 0, 0), 90.0f);
     }
 
     private Vector3[] PathControlPointGenerator(Vector3[] path)
