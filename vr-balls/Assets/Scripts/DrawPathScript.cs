@@ -17,7 +17,24 @@ public class DrawPathScript : MonoBehaviour
         Vector3[] vector3s = PathControlPointGenerator(nodes);
 
         //DrawLine(vector3s, nodes.Length);
-        DrawTube(vector3s, nodes.Length);
+        //DrawTube(vector3s, nodes.Length);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            GameObject[] cylinders = GameObject.FindGameObjectsWithTag("Cylinder");
+            for (int i = 0; i < cylinders.Length; i++)
+            {
+                Destroy(cylinders[i]);
+            }
+
+            Vector3[] nodes = iTweenPath.GetPath(path.pathName);
+            Vector3[] vector3s = PathControlPointGenerator(nodes);
+
+            DrawTube(vector3s, nodes.Length);
+        }
     }
 
     private void DrawLine(Vector3[] vector3s, int nodesLength)
@@ -63,13 +80,16 @@ public class DrawPathScript : MonoBehaviour
     private void DrawCylinderBetweenTwoPoints(Vector3 start, Vector3 end)
     {
         GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        cylinder.tag = "Cylinder";
 
         Vector3 localScale = cylinder.transform.localScale;
-        float distance = Vector3.Distance(start, end) / 2;
-        cylinder.transform.localScale = new Vector3(0.2f, distance, 0.2f);
+        float halfDistance = Vector3.Distance(start, end) / 2;
+        cylinder.transform.localScale = new Vector3(0.2f, halfDistance * 1.2f, 0.2f);
 
-        cylinder.transform.position = start;
-        cylinder.transform.LookAt(end);
+        Vector3 halfDistanceVector = (end - start).normalized * halfDistance;
+
+        cylinder.transform.position = start + halfDistanceVector;
+        cylinder.transform.LookAt(start + 2 * halfDistanceVector);
         cylinder.transform.Rotate(new Vector3(1, 0, 0), 90.0f);
     }
 
