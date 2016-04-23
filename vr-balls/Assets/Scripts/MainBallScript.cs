@@ -27,14 +27,18 @@ public class MainBallScript : MonoBehaviour
 
     void Fire()
     {
-        GameObject ball = (GameObject)Instantiate(ballPrefab, transform.position, transform.rotation);
-        ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
-
+        Vector3 position = transform.position;
         Vector3 direction = transform.forward;
         if (cardboardHead)
         {
             direction = cardboardHead.Gaze.direction;
+            position = cardboardHead.transform.position + direction * 1.5f;
         }
+
+        GameObject ball = (GameObject)Instantiate(ballPrefab, position, transform.rotation);
+        ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
+
+        
         
         ball.GetComponent<Rigidbody>().velocity = direction * 6.0f;
 
