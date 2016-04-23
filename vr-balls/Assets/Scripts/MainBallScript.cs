@@ -35,11 +35,8 @@ public class MainBallScript : MonoBehaviour
             position = cardboardHead.transform.position + direction * 1.5f;
         }
 
-        GameObject ball = (GameObject)Instantiate(ballPrefab, position, transform.rotation);
+        GameObject ball = (GameObject)Instantiate(ballPrefab, position, Quaternion.identity);
         ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
-
-        
-        
         ball.GetComponent<Rigidbody>().velocity = direction * 6.0f;
 
         Destroy(ball, 1);

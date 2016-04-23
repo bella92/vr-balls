@@ -4,8 +4,6 @@ using System;
 
 public class DrawPathScript : MonoBehaviour
 {
-    public GameObject cylinderRef;
-
     private iTweenPath path;
     private LineRenderer lineRenderer;
 
