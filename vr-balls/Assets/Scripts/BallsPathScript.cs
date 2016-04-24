@@ -5,21 +5,17 @@ using System.Collections.Generic;
 
 public class BallsPathScript : MonoBehaviour
 {
-    public GameObject ballPrefab;
+    public GameObject pathBallPrefab;
+    public GameObject pathTrailPrefab;
     public GameObject pathColliderPrefab;
 
     private iTweenPath path;
     private Vector3[] points;
-    private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
-    private List<GameObject> balls = new List<GameObject>();
-    private float spawnTime = 1.55f;
-    private float spawnTimer;
-    private bool spawnEnabled = true;
+
+    private GameObject tailBall;
 
     void Start()
     {
-        spawnTimer = spawnTime;
-
         path = GetComponent<iTweenPath>();
         Vector3[] nodes = iTweenPath.GetPath(path.pathName);
         Vector3[] vector3s = PathControlPointGenerator(nodes);
@@ -33,43 +29,56 @@ public class BallsPathScript : MonoBehaviour
             Vector3 currentPoint = Interp(vector3s, pm);
             points[i - 1] = currentPoint;
             GameObject pathCollider = (GameObject)Instantiate(pathColliderPrefab, currentPoint, Quaternion.identity);
-            pathCollider.tag = "PathCollider";
+
+            if (i == 1)
+            {
+                pathCollider.tag = "FirstPathCollider";
+            }
         }
 
-        SpawnBall();
+        InitTrail();
+        AddHeadBall();
+    }
+
+    private void InitTrail()
+    {
+        Instantiate(pathTrailPrefab, points[0], Quaternion.identity);
     }
 
     void Update()
     {
-        SpawnBall();
-    }
-
-    public void Stop()
-    {
-        spawnEnabled = false;
-
-        for (int i = 0; i < balls.Count; i++)
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            balls[i].GetComponent<PathBallScript>().Stop();
+            GameObject[] pathBalls = GameObject.FindGameObjectsWithTag("PathBall");
+            for (int i = 0; i < pathBalls.Length; i++)
+            {
+                pathBalls[i].GetComponent<PathBallScript>().MoveToNextPoint();
+            }
         }
     }
 
-    private void SpawnBall()
+    private void AddHeadBall()
     {
-        spawnTimer -= Time.deltaTime;
+        Vector3 backward = Vector3.forward * -1;
+        Vector3 newCenter = points[0] + backward * pathBallPrefab.transform.localScale.x;
 
-        if (spawnEnabled && spawnTimer <= 0)
-        {
-            GameObject ball = (GameObject)Instantiate(ballPrefab, points[0], Quaternion.identity);
+        GameObject ball = (GameObject)Instantiate(pathBallPrefab, newCenter, Quaternion.identity);
 
-            int randomIndex = UnityEngine.Random.Range(0, colors.Length);
-            ball.GetComponent<MeshRenderer>().material.color = colors[randomIndex];
-            ball.GetComponent<PathBallScript>().SetPathPoints(points);
+        ball.GetComponent<PathBallScript>().Init(points, this);
 
-            balls.Add(ball);
+        tailBall = ball;
+    }
 
-            spawnTimer = spawnTime;
-        }
+    public void AddTailBall()
+    {
+        Vector3 backward = tailBall.transform.forward * -1;
+        Vector3 newCenter = tailBall.transform.position + backward * pathBallPrefab.transform.localScale.x;
+
+        GameObject newTailBall = (GameObject)Instantiate(pathBallPrefab, newCenter, Quaternion.identity);
+        newTailBall.GetComponent<PathBallScript>().Init(points, this);
+
+        newTailBall.GetComponent<PathBallScript>().previousBall = tailBall;
+        tailBall = newTailBall;
     }
 
     private Vector3[] PathControlPointGenerator(Vector3[] path)

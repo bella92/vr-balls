@@ -5,28 +5,20 @@ using System;
 public class PathBallScript : MonoBehaviour
 {
     public float speed = 0.4f;
+    public GameObject previousBall;
 
     private int currentPointIndex;
     private Vector3[] pathPoints;
+    private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
+    private BallsPathScript ballsPath;
 
-    void Update()
+    public void Init(Vector3[] points, BallsPathScript ballsPathScript)
     {
-        Vector3 position = transform.position;
-
-        int index = Array.FindIndex(pathPoints, point => point.x == position.x &&
-            point.y == position.y &&
-            point.z == position.z);
-
-        if (index != -1)
-        {
-            MoveToNextPoint();
-        }
-    }
-
-    public void SetPathPoints(Vector3[] points)
-    {
-        currentPointIndex = 0;
+        SetRandomColor();
+        currentPointIndex = -1;
         pathPoints = points;
+        ballsPath = ballsPathScript;
+        MoveToNextPoint();
     }
 
     public void MoveToNextPoint()
@@ -59,23 +51,29 @@ public class PathBallScript : MonoBehaviour
         {
             MoveToNextPoint();
         }
+        else if (tag == "FirstPathCollider")
+        {
+            MoveToNextPoint();
+            GetComponent<MeshRenderer>().enabled = true;
+            ballsPath.AddTailBall();
+        }
         else if (tag == "Ball")
         {
-            GameObject[] ballsPaths = GameObject.FindGameObjectsWithTag("BallsPath");
-
-            if (ballsPaths.Length > 0)
+            GameObject[] pathBalls = GameObject.FindGameObjectsWithTag("PathBall");
+            for (int i = 0; i < pathBalls.Length; i++)
             {
-                GameObject ballsPath = ballsPaths[0];
-                ballsPath.GetComponent<BallsPathScript>().Stop();
+                pathBalls[i].GetComponent<PathBallScript>().Stop();
             }
-
-            //GameObject[] pathBalls = GameObject.FindGameObjectsWithTag("PathBall");
-            //Debug.Log(pathBalls.Length);
-
-            //for (int i = 0; i < pathBalls.Length; i++)
-            //{
-            //    pathBalls[i].GetComponent<Rigidbody>().velocity = Vector3.zero;
-            //}
         }
+        //else if (tag == "PathBall")
+        //{
+        //    Destroy(gameObject);
+        //}
+    }
+
+    private void SetRandomColor()
+    {
+        int randomIndex = UnityEngine.Random.Range(0, colors.Length);
+        GetComponent<MeshRenderer>().material.color = colors[randomIndex];
     }
 }
