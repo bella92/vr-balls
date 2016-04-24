@@ -59,10 +59,7 @@ public class BallsPathScript : MonoBehaviour
 
     private void AddHeadBall()
     {
-        Vector3 backward = Vector3.forward * -1;
-        Vector3 newCenter = points[0] + backward * pathBallPrefab.transform.localScale.x;
-
-        GameObject ball = (GameObject)Instantiate(pathBallPrefab, newCenter, Quaternion.identity);
+        GameObject ball = (GameObject)Instantiate(pathBallPrefab, points[0], Quaternion.identity);
 
         ball.GetComponent<PathBallScript>().Init(points, this);
 
@@ -71,13 +68,16 @@ public class BallsPathScript : MonoBehaviour
 
     public void AddTailBall()
     {
-        Vector3 backward = tailBall.transform.forward * -1;
-        Vector3 newCenter = tailBall.transform.position + backward * pathBallPrefab.transform.localScale.x;
+        Vector3 direction = points[0] - tailBall.transform.position;
+        Vector3 newCenter = points[0] + direction;
 
         GameObject newTailBall = (GameObject)Instantiate(pathBallPrefab, newCenter, Quaternion.identity);
+
+        tailBall.GetComponent<PathBallScript>().previousBall = newTailBall;
+        newTailBall.GetComponent<PathBallScript>().nextBall = tailBall;
+
         newTailBall.GetComponent<PathBallScript>().Init(points, this);
 
-        newTailBall.GetComponent<PathBallScript>().previousBall = tailBall;
         tailBall = newTailBall;
     }
 

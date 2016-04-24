@@ -6,18 +6,30 @@ public class PathBallScript : MonoBehaviour
 {
     public float speed = 0.4f;
     public GameObject previousBall;
+    public GameObject nextBall;
+    public Color? newBallColor = null;
 
     private int currentPointIndex;
     private Vector3[] pathPoints;
     private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
     private BallsPathScript ballsPath;
 
+    private float nextUsage;
+    private float delay = 3f;
+
+    void Start()
+    {
+        nextUsage = Time.time + delay;
+    }
+
     public void Init(Vector3[] points, BallsPathScript ballsPathScript)
     {
-        SetRandomColor();
         currentPointIndex = -1;
         pathPoints = points;
         ballsPath = ballsPathScript;
+
+        SetInitialColor();
+
         MoveToNextPoint();
     }
 
@@ -51,12 +63,6 @@ public class PathBallScript : MonoBehaviour
         {
             MoveToNextPoint();
         }
-        else if (tag == "FirstPathCollider")
-        {
-            MoveToNextPoint();
-            GetComponent<MeshRenderer>().enabled = true;
-            ballsPath.AddTailBall();
-        }
         else if (tag == "Ball")
         {
             GameObject[] pathBalls = GameObject.FindGameObjectsWithTag("PathBall");
@@ -64,16 +70,55 @@ public class PathBallScript : MonoBehaviour
             {
                 pathBalls[i].GetComponent<PathBallScript>().Stop();
             }
+
+            Color otherColor = other.GetComponent<MeshRenderer>().material.color;
+            Destroy(other.gameObject);
+
+            TransferColorToBallBehind(otherColor);
         }
-        //else if (tag == "PathBall")
-        //{
-        //    Destroy(gameObject);
-        //}
     }
 
-    private void SetRandomColor()
+    public void TransferColorToBallBehind(Color otherColor)
+    {
+        Debug.Log("inside");
+        if (previousBall == null)
+        {
+            newBallColor = otherColor;
+            return;
+        }
+
+        Color currentColor = GetComponent<MeshRenderer>().material.color;
+        previousBall.GetComponent<PathBallScript>().TransferColorToBallBehind(currentColor);
+
+        GetComponent<MeshRenderer>().material.color = otherColor;
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        string tag = other.gameObject.tag;
+
+        if (tag == "FirstPathCollider")
+        {
+            MoveToNextPoint();
+            GetComponent<MeshRenderer>().enabled = true;
+            ballsPath.AddTailBall();
+        }
+    }
+
+    private void SetInitialColor()
     {
         int randomIndex = UnityEngine.Random.Range(0, colors.Length);
-        GetComponent<MeshRenderer>().material.color = colors[randomIndex];
+        Color color = colors[randomIndex];
+
+        if (nextBall != null)
+        {
+            Color? newBallColor = nextBall.GetComponent<PathBallScript>().newBallColor;
+            if (newBallColor != null)
+            {
+                color = (Color)newBallColor;
+            }
+        }
+
+        GetComponent<MeshRenderer>().material.color = color;
     }
 }
