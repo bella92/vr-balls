@@ -14,6 +14,7 @@ public class BallsPathScript : MonoBehaviour
     private List<GameObject> balls = new List<GameObject>();
     private float spawnTime = 1.55f;
     private float spawnTimer;
+    private bool spawnEnabled = true;
 
     void Start()
     {
@@ -43,10 +44,21 @@ public class BallsPathScript : MonoBehaviour
         SpawnBall();
     }
 
+    public void Stop()
+    {
+        spawnEnabled = false;
+
+        for (int i = 0; i < balls.Count; i++)
+        {
+            balls[i].GetComponent<PathBallScript>().Stop();
+        }
+    }
+
     private void SpawnBall()
     {
         spawnTimer -= Time.deltaTime;
-        if (spawnTimer <= 0)
+
+        if (spawnEnabled && spawnTimer <= 0)
         {
             GameObject ball = (GameObject)Instantiate(ballPrefab, points[0], Quaternion.identity);
 

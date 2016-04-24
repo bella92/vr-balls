@@ -46,6 +46,11 @@ public class PathBallScript : MonoBehaviour
         }
     }
 
+    public void Stop()
+    {
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+    }
+
     void OnTriggerEnter(Collider other)
     {
         string tag = other.gameObject.tag;
@@ -56,7 +61,21 @@ public class PathBallScript : MonoBehaviour
         }
         else if (tag == "Ball")
         {
-            Debug.Log("Ball");
+            GameObject[] ballsPaths = GameObject.FindGameObjectsWithTag("BallsPath");
+
+            if (ballsPaths.Length > 0)
+            {
+                GameObject ballsPath = ballsPaths[0];
+                ballsPath.GetComponent<BallsPathScript>().Stop();
+            }
+
+            //GameObject[] pathBalls = GameObject.FindGameObjectsWithTag("PathBall");
+            //Debug.Log(pathBalls.Length);
+
+            //for (int i = 0; i < pathBalls.Length; i++)
+            //{
+            //    pathBalls[i].GetComponent<Rigidbody>().velocity = Vector3.zero;
+            //}
         }
     }
 }
