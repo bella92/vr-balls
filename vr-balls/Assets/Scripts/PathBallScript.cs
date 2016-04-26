@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class PathBallScript : MonoBehaviour
 {
-    public float speed = 0.05f;
+    public float defaultSpeed = 1f;
+    public string movementDirection = "forward";
 
     private int currentPointIndex = -1;
     private int nextPointIndex = 1;
     private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
-    private bool allowedToMove = false;
+    private bool canMove = false;
 
     private int index = -1;
 
@@ -18,9 +19,10 @@ public class PathBallScript : MonoBehaviour
         SetRandomColor();
     }
     
-    public void SetIndex(int i)
+    public void SetIndex(int i, bool move)
     {
         index = i;
+        canMove = move;
         Move();
     }
 
@@ -29,66 +31,51 @@ public class PathBallScript : MonoBehaviour
         GetComponent<MeshRenderer>().enabled = true;
     }
 
-    public void AllowToMove()
+    public void Hide()
     {
-        Debug.Log("AllowToMove index: " + index);
-        
-        allowedToMove = true;
+        GetComponent<MeshRenderer>().enabled = false;
     }
 
-    //private void Move()
-    //{
-    //    if (allowedToMove)
-    //    {
-            
-    //        Vector3 nextPoint = PathCollidersManager.GetColliderPosition(nextPointIndex);
+    public void StopMove()
+    {
+        canMove = false;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+    }
 
-    //        float distance = Vector3.Distance(transform.position, nextPoint);
-    //        Debug.Log("distance: " + distance);
+    public void StartMove()
+    {
+        canMove = true;
+        Move();
+    }
 
-    //        if (distance > 0.01f)
-    //        {
-    //            Vector3 direction = (nextPoint - transform.position).normalized;
-    //            GetComponent<Rigidbody>().MovePosition(transform.position + direction * Time.deltaTime);
-    //        }
-    //        else
-    //        {
-    //            Debug.Log(distance == 0);
-    //            nextPointIndex += 1;
-
-    //            if (nextPointIndex >= PathCollidersManager.GetCount())
-    //            {
-    //                //TODO: Game Over
-    //                Destroy(gameObject);
-    //                return;
-    //            }
-    //        }
-    //    }
-    //}
-
-    //public void IncrementNextPoint()
-    //{
-    //    currentPointIndex += 1;
-
-    //    if (currentPointIndex >= PathCollidersManager.GetCount())
-    //    {
-    //        //TODO: Game Over
-    //        Destroy(gameObject);
-    //    }
-    //    else
-    //    {
-    //        Debug.Log(index);
-    //        Debug.Log(currentPointIndex);
-
-    //        //Debug.Log("nextPoint " + nextPoint.x + ", " + nextPoint.y + ", " + nextPoint.z);
-
-
-    //        //Vector3 direction = (nextPoint - transform.position).normalized;
-    //        //GetComponent<Rigidbody>().velocity = direction * speed;
-    //    }
-    //}
+    public void ToggleMovementDirection()
+    {
+        if (movementDirection == "forward")
+        {
+            movementDirection = "backward";
+        }
+        else
+        {
+            movementDirection = "forward";
+        }
+    }
 
     public void Move()
+    {
+        if (canMove)
+        {
+            if (movementDirection == "forward")
+            {
+                MoveForward();
+            }
+            else
+            {
+                MoveBackward();
+            }
+        }
+    }
+
+    private void MoveForward()
     {
         currentPointIndex += 1;
 
@@ -101,13 +88,24 @@ public class PathBallScript : MonoBehaviour
         {
             Vector3 nextPoint = PathCollidersManager.GetColliderPosition(currentPointIndex);
             Vector3 direction = (nextPoint - transform.position).normalized;
-            GetComponent<Rigidbody>().velocity = direction * speed;
+            GetComponent<Rigidbody>().velocity = direction * defaultSpeed;
         }
     }
 
-    public void ForbidToMove()
+    private void MoveBackward()
     {
-        allowedToMove = false;
+        currentPointIndex -= 1;
+
+        if (currentPointIndex < 0)
+        {
+            Hide();
+        }
+        else
+        {
+            Vector3 nextPoint = PathCollidersManager.GetColliderPosition(currentPointIndex);
+            Vector3 direction = (nextPoint - transform.position).normalized;
+            GetComponent<Rigidbody>().velocity = direction * defaultSpeed;
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -121,7 +119,6 @@ public class PathBallScript : MonoBehaviour
 
             if (isFirstCollider)
             {
-                Debug.Log("first");
                 Show();
             }
         }
@@ -133,10 +130,10 @@ public class PathBallScript : MonoBehaviour
             //    pathBalls[i].GetComponent<PathBallScript>().Stop();
             //}
 
-            Color otherColor = other.GetComponent<MeshRenderer>().material.color;
-            Destroy(other.gameObject);
+            //Color otherColor = other.GetComponent<MeshRenderer>().material.color;
+            //Destroy(other.gameObject);
 
-            BallsManager.ShiftBallsColor(index, otherColor);
+            //BallsManager.ShiftBallsColor(index, otherColor);
         }
     }
 
@@ -170,5 +167,10 @@ public class PathBallScript : MonoBehaviour
         Color color = colors[randomIndex];
 
         GetComponent<MeshRenderer>().material.color = color;
+    }
+
+    public void SelfDestroy()
+    {
+        Destroy(gameObject);
     }
 }

@@ -54,7 +54,7 @@ public class BallsPathScript : MonoBehaviour
         GameObject ball = (GameObject)Instantiate(pathBallPrefab, spawnPoint, Quaternion.identity);
 
         BallsManager.AddBall(ball);
-        ball.GetComponent<PathBallScript>().SetIndex(index);
+        ball.GetComponent<PathBallScript>().SetIndex(index, true);
     }
 
     private Vector3[] PathControlPointGenerator(Vector3[] path)
