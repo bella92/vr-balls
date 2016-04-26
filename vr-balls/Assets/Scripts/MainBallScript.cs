@@ -39,7 +39,7 @@ public class MainBallScript : MonoBehaviour
         ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
         ball.GetComponent<Rigidbody>().velocity = direction * 6.0f;
 
-        Destroy(ball, 1);
+        Destroy(ball, 2);
     }
     
     void ChangeColor()
