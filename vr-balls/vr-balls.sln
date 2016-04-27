@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2015
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vr-balls.CSharp", "vr-balls.CSharp.csproj", "{C15D3EC3-0834-E19F-3ED6-1037C7987C3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vr-balls.CSharp.Editor", "vr-balls.CSharp.Editor.csproj", "{1F516402-A6FE-E32C-1E3D-459E727C7A50}"
