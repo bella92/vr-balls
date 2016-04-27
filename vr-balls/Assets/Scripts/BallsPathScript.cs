@@ -23,7 +23,7 @@ public class BallsPathScript : MonoBehaviour
         Vector3[] nodes = iTweenPath.GetPath(path.pathName);
         Vector3[] vector3s = PathControlPointGenerator(nodes);
 
-        int smoothAmount = nodes.Length * 20;
+        int smoothAmount = nodes.Length * 100;
         points = new Vector3[smoothAmount];
 
         for (int i = 1; i <= smoothAmount; i++)
@@ -41,7 +41,7 @@ public class BallsPathScript : MonoBehaviour
 
         for (int i = 0; i < 20; i++)
         {
-            SpawnBall();
+            SpawnHeadBall();
         }
 
         canMove = true;
@@ -71,7 +71,9 @@ public class BallsPathScript : MonoBehaviour
         Vector3 spawnPoint = points[0];
 
         GameObject ball = (GameObject)Instantiate(headBallPrefab, spawnPoint, Quaternion.identity);
+        
         ball.GetComponent<HeadBall>().SetPoints(points);
+        ball.GetComponent<HeadBall>().SetBallAhead(lastBall);
 
         balls.Add(ball);
         lastBall = ball;

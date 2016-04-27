@@ -4,7 +4,7 @@ using System.Collections;
 public class HeadBall : MonoBehaviour
 {
     // Params
-    float moveSpeed = 1; // Move speed
+    float moveSpeed = 3; // Move speed
     float rotationSpeed = 100; // Speed of turning    
 
     // Find game objects
@@ -12,14 +12,36 @@ public class HeadBall : MonoBehaviour
     private int currentPointIndex = 0;
     private Vector3 destinationPoint;
 
+    public GameObject ballAhead;
+
+    public void SetBallAhead(GameObject ball)
+    {
+        ballAhead = ball;
+    }
+
     void FixedUpdate()
     {
         if (points != null)
         {
+            float distanceToDestination = Vector3.Distance(destinationPoint, transform.position);
+
             // If the distance is over 5 units
-            if (Vector3.Distance(destinationPoint, transform.position) < 0.03f)
+            if (distanceToDestination < 0.03f)
             {
-                ChangeDestinationPoint();
+                if (ballAhead == null)
+                {
+                    ChangeDestinationPoint();
+                }
+                else
+                {
+                    float diameter = ballAhead.transform.localScale.x;
+                    float distanceToBallAhead = Vector3.Distance(ballAhead.transform.position, transform.position);
+
+                    if (distanceToBallAhead > diameter)
+                    {
+                        ChangeDestinationPoint();
+                    }
+                }
             }
             else
             {
