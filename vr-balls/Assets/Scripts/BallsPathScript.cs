@@ -5,14 +5,9 @@ using System.Collections.Generic;
 
 public class BallsPathScript : MonoBehaviour
 {
-    public GameObject leaderBallPrefab;
-    public GameObject followerBallPrefab;
-
     public GameObject pathBallPrefab;
     public GameObject pathTrailPrefab;
     public GameObject pathColliderPrefab;
-
-    public Vector3[] points;
 
     private iTweenPath path;
 
@@ -23,59 +18,35 @@ public class BallsPathScript : MonoBehaviour
         Vector3[] vector3s = PathControlPointGenerator(nodes);
 
         int smoothAmount = nodes.Length * 20;
-        points = new Vector3[smoothAmount];
 
         for (int i = 1; i <= smoothAmount; i++)
         {
             float pm = (float)i / smoothAmount;
             Vector3 currentPoint = Interp(vector3s, pm);
-            points[i - 1] = currentPoint;
-            //GameObject pathCollider = (GameObject)Instantiate(pathColliderPrefab, currentPoint, Quaternion.identity);
-            //PathCollidersManager.AddCollider(pathCollider);
+            GameObject pathCollider = (GameObject)Instantiate(pathColliderPrefab, currentPoint, Quaternion.identity);
+            PathCollidersManager.AddCollider(pathCollider);
         }
 
         InitTrail();
 
-        //Vector3 firstPoint = PathCollidersManager.GetColliderPosition(0);
-        //Vector3 secondPoint = PathCollidersManager.GetColliderPosition(1
-
-        Vector3 firstPoint = points[0];
-        Vector3 secondPoint = points[1];
-
-        Vector3 differnce = (firstPoint - secondPoint).normalized;
-        Vector3 spawnPoint = firstPoint + differnce * leaderBallPrefab.transform.localScale.x;
-
-        GameObject leaderBall = (GameObject)Instantiate(leaderBallPrefab, firstPoint, Quaternion.identity);
-        //leaderBall.GetComponent<PathBallScript>().SetIndex(0, true);
-        GameObject followerBall = (GameObject)Instantiate(followerBallPrefab, spawnPoint, Quaternion.identity);
-
-
-        //for (int i = 0; i < 20; i++)
-        //{
-        //    SpawnBall(i);
-        //}
+        for (int i = 0; i < 20; i++)
+        {
+            SpawnBall(i);
+        }
 
         //BallsManager.AllowBallToMove(0);
     }
 
-    public Vector3[] GetPoints()
-    {
-        return points;
-    }
-
     private void InitTrail()
     {
-        //Vector3 spawnPoint = PathCollidersManager.GetColliderPosition(0);
-        Instantiate(pathTrailPrefab, points[0], Quaternion.identity);
+        Vector3 spawnPoint = PathCollidersManager.GetColliderPosition(0);
+        Instantiate(pathTrailPrefab, spawnPoint, Quaternion.identity);
     }
 
     private void SpawnBall(int index)
     {
-        //Vector3 firstPoint = PathCollidersManager.GetColliderPosition(0);
-        //Vector3 secondPoint = PathCollidersManager.GetColliderPosition(1);
-
-        Vector3 firstPoint = points[0];
-        Vector3 secondPoint = points[1];
+        Vector3 firstPoint = PathCollidersManager.GetColliderPosition(0);
+        Vector3 secondPoint = PathCollidersManager.GetColliderPosition(1);
 
         Vector3 differnce = (firstPoint - secondPoint).normalized;
         Vector3 spawnPoint = firstPoint + differnce * pathBallPrefab.transform.localScale.x * (index + 1);
