@@ -92,6 +92,8 @@
     <Compile Include="Assets\Scripts\BallsPathScript.cs" />
     <Compile Include="Assets\Scripts\CameraScript.cs" />
     <Compile Include="Assets\Scripts\DrawPathScript.cs" />
+    <Compile Include="Assets\Scripts\FollowBall.cs" />
+    <Compile Include="Assets\Scripts\HeadBall.cs" />
     <Compile Include="Assets\Scripts\MainBallScript.cs" />
     <Compile Include="Assets\Scripts\PathBallScript.cs" />
     <Compile Include="Assets\Scripts\PathCollidersManager.cs" />
