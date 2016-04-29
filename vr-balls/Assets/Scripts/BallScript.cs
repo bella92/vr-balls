@@ -3,32 +3,81 @@ using System.Collections;
 
 public class BallScript : MonoBehaviour
 {
-    private bool passed = false;
+    private Vector3 target;
+    private Vector3 fireTarget;
+    private bool isPathColliderHit = false;
+    private float minDistance;
+    private GameObject closestPathBall;
+    private bool ballHit = false;
 
-    public GameObject pathBallPrefab;
-
-    void OnTriggerEnter(Collider other)
+    void Start()
     {
-        string tag = other.gameObject.tag;
+        minDistance = transform.localScale.x;
+    }
 
-        if (!passed && tag == "PathCollider")
+    void Update()
+    {
+        float step = 12.0f * Time.deltaTime;
+        transform.position = Vector3.MoveTowards(transform.position, target, step);
+
+        if (closestPathBall != null)
         {
-            passed = true;
+            float distance = Vector3.Distance(transform.position, target);
 
-            Vector3 position = other.gameObject.transform.position;
-            Destroy(gameObject);
-            InsertToBalls(position);
+            if (distance < 0.03f)
+            {
+                Debug.Log("reached");
+
+                Destroy(gameObject);
+
+                BallsManager.StopMovingBalls();
+
+                int index = closestPathBall.GetComponent<PathBallScript>().GetIndex();
+                BallsPathScript ballsPathScript = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
+
+                Color color = GetComponent<MeshRenderer>().material.color;
+                ballsPathScript.InsertBall(index, target, color);
+
+                BallsManager.StartMovingBalls();
+            }
+        }
+        else
+        {
+            SetTarget(fireTarget);
         }
     }
 
-    private void InsertToBalls(Vector3 position)
+    public void SetFireTarget(Vector3 newFireTarget)
     {
-        Debug.Log("InsertToBalls");
-        int closestIndex = BallsManager.FindClosestBallIndex(position);
-        GameObject ball = (GameObject)Instantiate(pathBallPrefab, position, Quaternion.identity);
+        fireTarget = newFireTarget;
+        target = newFireTarget;
+    }
 
-        BallsManager.InsertBall(closestIndex, ball);
-        ball.GetComponent<PathBallScript>().SetIndex(closestIndex, false);
-        ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
+    public void SetTarget(Vector3 newTarget)
+    {
+        target = newTarget;
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        string tag = other.gameObject.tag;
+
+        if (ballHit && !isPathColliderHit && tag == "PathCollider")
+        {
+            isPathColliderHit = true;
+
+            SetTarget(other.gameObject.transform.position);
+        }
+        else if (tag == "PathBall")
+        {
+            ballHit = true;
+            float distance = Vector3.Distance(transform.position, other.gameObject.transform.position);
+
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestPathBall = other.gameObject;
+            }
+        }
     }
 }

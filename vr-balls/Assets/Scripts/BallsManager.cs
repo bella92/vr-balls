@@ -3,118 +3,61 @@ using UnityEngine;
 
 public static class BallsManager
 {
-    private const int minCountToRemove = 3;
     private static List<GameObject> balls = new List<GameObject>();
 
     public static int GetCount()
     {
         return balls.Count;
     }
-    
+
     public static void AddBall(GameObject ball)
     {
         balls.Add(ball);
-        //RemoveTriples();
+        int index = balls.Count - 1;
+        ball.GetComponent<PathBallScript>().SetIndex(index);
     }
 
-    public static void InsertBall(int index, GameObject ball)
+    public static void InsertBall(int index, GameObject ball, Color color)
     {
-        balls.Insert(index, ball);
-        Debug.Log("balls: " + balls.Count);
+        int currentPointIndex = balls[index].GetComponent<PathBallScript>().GetCurrentPointIndex();
 
-        StopMoveBalls();
+        balls.Insert(index, ball);
+        ball.GetComponent<PathBallScript>().SetIndex(index);
+        ball.GetComponent<PathBallScript>().SetCurrentPointIndex(currentPointIndex + 1);
+        ball.GetComponent<PathBallScript>().SetColor(color);
 
         for (int i = index + 1; i < balls.Count; i++)
         {
-            balls[i].GetComponent<PathBallScript>().ToggleMovementDirection();
+            int previousIndex = balls[i].GetComponent<PathBallScript>().GetIndex();
+            balls[i].GetComponent<PathBallScript>().SetIndex(previousIndex + 1);
         }
-
-        StartMoveBalls();
-
-        //RemoveTriples();
     }
 
-    public static void StopMoveBalls()
+    public static void StopMovingBalls()
     {
         for (int i = 0; i < balls.Count; i++)
         {
-            balls[i].GetComponent<PathBallScript>().StopMove();
+            balls[i].GetComponent<PathBallScript>().StopMoving();
         }
     }
 
-    public static void StartMoveBalls()
+    public static void StartMovingBalls()
     {
         for (int i = 0; i < balls.Count; i++)
         {
-            balls[i].GetComponent<PathBallScript>().StartMove();
+            balls[i].GetComponent<PathBallScript>().StartMoving();
         }
     }
 
-    //public static void ShiftBallsColor(int index, Color otherColor)
-    //{
-    //    Color color = otherColor;
-    //    int[] sameColorIndexes = new int[3];
-
-    //    for (int i = index; i < balls.Count; i++)
-    //    {
-    //        Color currentColor = balls[i].GetComponent<MeshRenderer>().material.color;
-    //        balls[i].GetComponent<MeshRenderer>().material.color = color;
-    //        color = currentColor;
-    //    }
-
-    //    RemoveTriples();
-    //}
-
-    public static int FindClosestBallIndex(Vector3 position)
+    public static void ShiftBallsColor(int index, Color otherColor)
     {
-        float minDistance = Vector3.Distance(position, balls[0].transform.position);
-        int minIndex = 0;
+        Color color = otherColor;
 
-        for (int i = 1; i < balls.Count; i++)
-        {
-            float distance = Vector3.Distance(position, balls[i].transform.position);
-
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                minIndex = i;
-            }
-        }
-
-        return minIndex;
-    }
-
-    private static void RemoveTriples()
-    {
-        int count = 1;
-        Color? color = balls[0].GetComponent<MeshRenderer>().material.color;
-
-        for (int i = 1; i < balls.Count - 2; i++)
+        for (int i = index; i < balls.Count; i++)
         {
             Color currentColor = balls[i].GetComponent<MeshRenderer>().material.color;
-            if (color == currentColor)
-            {
-                count += 1;
-            }
-            else
-            {
-                if (count >= minCountToRemove)
-                {
-                    DestroyRange(i - count, count);
-                    balls.RemoveRange(i - count + 1, count);
-                }
-
-                count = 1;
-                color = currentColor;
-            }
-        }
-    }
-
-    private static void DestroyRange(int index, int count)
-    {
-        for (int i = index; i < index + count; i++)
-        {
-            balls[i].GetComponent<PathBallScript>().SelfDestroy();
+            balls[i].GetComponent<MeshRenderer>().material.color = color;
+            color = currentColor;
         }
     }
 }

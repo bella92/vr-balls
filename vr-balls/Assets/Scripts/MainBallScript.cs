@@ -37,11 +37,9 @@ public class MainBallScript : MonoBehaviour
 
         GameObject ball = (GameObject)Instantiate(ballPrefab, position, Quaternion.identity);
         ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
-        ball.GetComponent<Rigidbody>().velocity = direction * 6.0f;
-
-        Destroy(ball, 2);
+        ball.GetComponent<BallScript>().SetFireTarget(direction * 1000);
     }
-    
+
     void ChangeColor()
     {
         int randomIndex = Random.Range(0, colors.Length);

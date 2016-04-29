@@ -4,7 +4,7 @@ using UnityEngine;
 public static class PathCollidersManager
 {
     private static List<GameObject> pathColliders = new List<GameObject>();
-    
+
     public static void AddCollider(GameObject collider)
     {
         pathColliders.Add(collider);
