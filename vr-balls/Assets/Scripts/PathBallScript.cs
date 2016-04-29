@@ -9,11 +9,14 @@ public class PathBallScript : MonoBehaviour
     private int currentPointIndex = 0;
     private int nextPointIndex = 1;
     private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
-    private bool canMove = false;
+    public bool canMove = false;
+    private PathMovingDirection pathMovingDirection = PathMovingDirection.Forward;
+    private bool isInserted = false;
+    private int insertNeighboursMovedCount = 0;
 
     public int index = -1;
 
-    private Vector3? target;
+    private Vector3 target;
 
     void Awake()
     {
@@ -22,32 +25,66 @@ public class PathBallScript : MonoBehaviour
 
     void Update()
     {
-        if (canMove && target != null)
+        Move();
+    }
+
+    private void Move()
+    {
+        if (canMove)
         {
             float step = speed * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, (Vector3)target, step);
-            float distance = Vector3.Distance(transform.position, (Vector3)target);
+            transform.position = Vector3.MoveTowards(transform.position, target, step);
+            float distance = Vector3.Distance(transform.position, target);
 
             if (distance < 0.03f)
             {
-                currentPointIndex += 1;
-
-                if (currentPointIndex >= PathCollidersManager.GetCount())
-                {
-                    //TODO: Game Over
-                    Destroy(gameObject);
-                }
-                else
-                {
-                    target = PathCollidersManager.GetColliderPosition(currentPointIndex);
-                }
+                ChangeCurrentPointIndex();
             }
         }
     }
 
-    public void SetIndex(int i)
+    private void ChangeCurrentPointIndex()
     {
-        index = i;
+        currentPointIndex += (int)pathMovingDirection;
+
+        if (currentPointIndex >= PathCollidersManager.GetCount())
+        {
+            //TODO: Game Over
+            Destroy(gameObject);
+        }
+        else if (currentPointIndex < 0)
+        {
+            currentPointIndex = 0;
+        }
+        else
+        {
+            target = PathCollidersManager.GetColliderPosition(currentPointIndex);
+        }
+    }
+
+    public void TogglePathMovingDirection()
+    {
+        pathMovingDirection = (PathMovingDirection)(-1 * (int)pathMovingDirection);
+        ChangeCurrentPointIndex();
+    }
+
+    public void ChangeSpeed(float speed)
+    {
+        this.speed = speed;
+    }
+
+    public void SetTarget(Vector3 newTarget)
+    {
+        target = newTarget;
+    }
+
+    public void Init(int index, int currentPointIndex, Color color)
+    {
+        isInserted = true;
+        this.index = index;
+        this.currentPointIndex = currentPointIndex;
+        GetComponent<MeshRenderer>().material.color = color;
+        Show();
     }
 
     public int GetIndex()
@@ -55,19 +92,14 @@ public class PathBallScript : MonoBehaviour
         return index;
     }
 
-    public void SetCurrentPointIndex(int pointIndex)
+    public void SetIndex(int index)
     {
-        currentPointIndex = pointIndex;
+        this.index = index;
     }
 
     public int GetCurrentPointIndex()
     {
         return currentPointIndex;
-    }
-
-    public void SetColor(Color color)
-    {
-        GetComponent<MeshRenderer>().material.color = color;
     }
 
     public Color GetColor()
@@ -80,35 +112,15 @@ public class PathBallScript : MonoBehaviour
         GetComponent<MeshRenderer>().enabled = true;
     }
 
-    //public void Move()
-    //{
-    //    if (canMove)
-    //    {
-    //        currentPointIndex += 1;
-
-    //        if (currentPointIndex >= PathCollidersManager.GetCount())
-    //        {
-    //            //TODO: Game Over
-    //            Destroy(gameObject);
-    //        }
-    //        else
-    //        {
-    //            Vector3 nextPoint = PathCollidersManager.GetColliderPosition(currentPointIndex);
-    //            Vector3 direction = (nextPoint - transform.position).normalized;
-    //            GetComponent<Rigidbody>().velocity = direction * speed;
-    //        }
-    //    }
-    //}
-
     public void StopMoving()
     {
         canMove = false;
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
     public void StartMoving()
     {
         canMove = true;
+        Debug.Log("start moving " + index);
         target = PathCollidersManager.GetColliderPosition(currentPointIndex);
     }
 
@@ -119,11 +131,45 @@ public class PathBallScript : MonoBehaviour
 
         if (tag == "PathCollider")
         {
-            //Move();
-
             if (isFirstCollider)
             {
                 Show();
+            }
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        string tag = other.gameObject.tag;
+
+        if (tag == "PathBall")
+        {
+            if (isInserted)
+            {
+                if (insertNeighboursMovedCount == 2)
+                {
+                    //Debug.Log("insertNeighboursMovedCount");
+                    //isInserted = false;
+                    //insertNeighboursMovedCount = 0;
+                    //BallsManager.ToggleBallsPathMovingDirection(index + 1);
+                    //BallsManager.StartMovingBalls();
+                }
+                else
+                {
+                    int otherIndex = other.gameObject.GetComponent<PathBallScript>().GetIndex();
+
+                    if (otherIndex == index - 1)
+                    {
+                        BallsManager.StopMovingBalls(0, index);
+                        insertNeighboursMovedCount += 1;
+                    }
+
+                    if (otherIndex == index + 1)
+                    {
+                        BallsManager.StopMovingBalls(index + 1);
+                        insertNeighboursMovedCount += 1;
+                    }
+                }
             }
         }
     }

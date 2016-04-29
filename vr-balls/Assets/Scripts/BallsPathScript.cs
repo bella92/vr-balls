@@ -35,6 +35,14 @@ public class BallsPathScript : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            BallsManager.ToggleBallsPathMovingDirection(0, BallsManager.GetCount());
+        }
+    }
+
     private void InitTrail()
     {
         Vector3 spawnPoint = PathCollidersManager.GetColliderPosition(0);

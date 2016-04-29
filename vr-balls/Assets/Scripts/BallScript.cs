@@ -37,8 +37,6 @@ public class BallScript : MonoBehaviour
 
                 Color color = GetComponent<MeshRenderer>().material.color;
                 ballsPathScript.InsertBall(index, target, color);
-
-                BallsManager.StartMovingBalls();
             }
         }
         else
