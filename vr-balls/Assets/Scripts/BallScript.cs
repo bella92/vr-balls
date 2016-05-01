@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class BallScript : MonoBehaviour
 {
@@ -7,7 +8,9 @@ public class BallScript : MonoBehaviour
     private Vector3 fireTarget;
     private bool isPathColliderHit = false;
     private float minDistance;
+    private float secondMinDistance;
     private GameObject closestPathBall;
+    private GameObject secondClosestPathBall;
     private bool ballHit = false;
 
     void Start()
@@ -32,7 +35,17 @@ public class BallScript : MonoBehaviour
 
                 BallsManager.StopMovingBalls();
 
-                int index = closestPathBall.GetComponent<PathBallScript>().GetIndex();
+                int closestIndex = closestPathBall.GetComponent<PathBallScript>().GetIndex();
+                int secondClosestIndex = -1;
+
+                if (secondClosestPathBall != null)
+                {
+                    secondClosestIndex = secondClosestPathBall.GetComponent<PathBallScript>().GetIndex();
+                }
+
+                int index = Math.Max(closestIndex, secondClosestIndex);
+                Debug.Log("insert index: " + index);
+
                 BallsPathScript ballsPathScript = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
 
                 Color color = GetComponent<MeshRenderer>().material.color;
@@ -75,6 +88,12 @@ public class BallScript : MonoBehaviour
             {
                 minDistance = distance;
                 closestPathBall = other.gameObject;
+            }
+
+            if (distance < secondMinDistance)
+            {
+                secondMinDistance = distance;
+                secondClosestPathBall = other.gameObject;
             }
         }
     }

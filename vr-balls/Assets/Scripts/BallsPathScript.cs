@@ -37,9 +37,16 @@ public class BallsPathScript : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward);
+            BallsManager.ChangeBallsSpeed(1f);
+            BallsManager.StartMovingBalls();
+        }
+
         if (Input.GetKeyDown(KeyCode.W))
         {
-            BallsManager.ToggleBallsPathMovingDirection(0, BallsManager.GetCount());
+            BallsManager.StopMovingBalls();
         }
     }
 
@@ -51,14 +58,16 @@ public class BallsPathScript : MonoBehaviour
 
     private void AddBall(int index)
     {
-        Vector3 firstPoint = PathCollidersManager.GetColliderPosition(0);
-        Vector3 secondPoint = PathCollidersManager.GetColliderPosition(1);
-
-        Vector3 differnce = (firstPoint - secondPoint).normalized;
-        Vector3 spawnPoint = firstPoint + differnce * pathBallPrefab.transform.localScale.x * (index + 1);
+        Vector3 spawnPoint = PathCollidersManager.GetColliderPosition(0);
 
         GameObject ball = (GameObject)Instantiate(pathBallPrefab, spawnPoint, Quaternion.identity);
-        ball.GetComponent<PathBallScript>().StartMoving();
+
+        if (index == 0)
+        {
+            ball.GetComponent<PathBallScript>().Show();
+            ball.GetComponent<PathBallScript>().StartMoving();
+        }
+
         BallsManager.AddBall(ball);
     }
 

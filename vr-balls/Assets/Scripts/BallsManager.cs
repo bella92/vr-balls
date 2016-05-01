@@ -4,7 +4,7 @@ using UnityEngine;
 public static class BallsManager
 {
     private static List<GameObject> balls = new List<GameObject>();
-    private static float makeRoomSpeed = 1.0f;
+    private static float makeRoomSpeed = 0.3f;
 
     public static int GetCount()
     {
@@ -26,6 +26,13 @@ public static class BallsManager
         balls.Insert(index, ball);
         ball.GetComponent<PathBallScript>().Init(index, currentPointIndex + 1, color);
 
+        int waitCount = 2;
+        if (index == 0 || index == balls.Count - 1)
+        {
+            waitCount = 1;
+        }
+        ball.GetComponent<PathBallScript>().SetWaitCount(waitCount);
+
         for (int i = index + 1; i < balls.Count; i++)
         {
             int previousIndex = balls[i].GetComponent<PathBallScript>().GetIndex();
@@ -39,9 +46,19 @@ public static class BallsManager
         StartMovingBalls(index + 1, balls.Count);
     }
 
-    public static void StopMovingBalls(int startIndex = 0, int endIndex = 0)
+    public static GameObject GetBallAtIndex(int index)
     {
-        if (endIndex == 0)
+        if (index >= 0 && index < balls.Count)
+        {
+            return balls[index];
+        }
+
+        return null;
+    }
+
+    public static void StopMovingBalls(int startIndex = 0, int endIndex = -1)
+    {
+        if (endIndex == -1)
         {
             endIndex = balls.Count;
         }
@@ -52,9 +69,9 @@ public static class BallsManager
         }
     }
 
-    public static void StartMovingBalls(int startIndex = 0, int endIndex = 0)
+    public static void StartMovingBalls(int startIndex = 0, int endIndex = -1)
     {
-        if (endIndex == 0)
+        if (endIndex == -1)
         {
             endIndex = balls.Count;
         }
@@ -65,9 +82,22 @@ public static class BallsManager
         }
     }
 
-    public static void ToggleBallsPathMovingDirection(int startIndex = 0, int endIndex = 0)
+    public static void SetBallsPathMovingDirection(PathMovingDirection direction, int startIndex = 0, int endIndex = -1)
     {
-        if (endIndex == 0)
+        if (endIndex == -1)
+        {
+            endIndex = balls.Count;
+        }
+
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            balls[i].GetComponent<PathBallScript>().SetPathMovingDirection(direction);
+        }
+    }
+
+    public static void ToggleBallsPathMovingDirection(int startIndex = 0, int endIndex = -1)
+    {
+        if (endIndex == -1)
         {
             endIndex = balls.Count;
         }
