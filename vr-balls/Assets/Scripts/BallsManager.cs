@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class BallsManager
@@ -20,7 +21,6 @@ public static class BallsManager
 
     public static void InsertBall(int index, GameObject ball, Color color)
     {
-        Debug.Log("insert ball index: " + index);
         int currentPointIndex = balls[index].GetComponent<PathBallScript>().GetCurrentPointIndex();
 
         balls.Insert(index, ball);
@@ -39,7 +39,7 @@ public static class BallsManager
             balls[i].GetComponent<PathBallScript>().SetIndex(previousIndex + 1);
         }
 
-        ToggleBallsPathMovingDirection(index + 1, balls.Count);
+        SetBallsPathMovingDirection(PathMovingDirection.Backward, index + 1, balls.Count);
         ChangeBallsSpeed(makeRoomSpeed);
 
         StartMovingBalls(0, index);
@@ -95,19 +95,6 @@ public static class BallsManager
         }
     }
 
-    public static void ToggleBallsPathMovingDirection(int startIndex = 0, int endIndex = -1)
-    {
-        if (endIndex == -1)
-        {
-            endIndex = balls.Count;
-        }
-
-        for (int i = startIndex; i < endIndex; i++)
-        {
-            balls[i].GetComponent<PathBallScript>().TogglePathMovingDirection();
-        }
-    }
-
     public static void ChangeBallsSpeed(float speed)
     {
         for (int i = 0; i < balls.Count; i++)
@@ -116,15 +103,34 @@ public static class BallsManager
         }
     }
 
-    public static void ShiftBallsColor(int index, Color otherColor)
+    public static int FindInsertIndex(Vector3 position, float insideDiameter)
     {
-        Color color = otherColor;
+        float minDistance = insideDiameter;
+        int minDistanceIndex = -1;
 
-        for (int i = index; i < balls.Count; i++)
+        int secondMinDistanceIndex = -1;
+        float secondMinDistance = insideDiameter;
+
+        for (int i = 0; i < balls.Count; i++)
         {
-            Color currentColor = balls[i].GetComponent<MeshRenderer>().material.color;
-            balls[i].GetComponent<MeshRenderer>().material.color = color;
-            color = currentColor;
+            float distance = Vector3.Distance(position, balls[i].transform.position);
+
+            if (distance < minDistance)
+            {
+                secondMinDistance = minDistance;
+                secondMinDistanceIndex = minDistanceIndex;
+
+                minDistance = distance;
+                minDistanceIndex = i;
+            }
+            else if (distance < secondMinDistance && distance != minDistance)
+            {
+                secondMinDistance = distance;
+                secondMinDistanceIndex = i;
+            }
         }
+
+        int index = Math.Max(minDistanceIndex, secondMinDistanceIndex);
+        return index;
     }
 }

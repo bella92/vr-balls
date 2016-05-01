@@ -7,23 +7,14 @@ public class BallScript : MonoBehaviour
     private Vector3 target;
     private Vector3 fireTarget;
     private bool isPathColliderHit = false;
-    private float minDistance;
-    private float secondMinDistance;
-    private GameObject closestPathBall;
-    private GameObject secondClosestPathBall;
     private bool ballHit = false;
-
-    void Start()
-    {
-        minDistance = transform.localScale.x;
-    }
 
     void Update()
     {
         float step = 12.0f * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, target, step);
 
-        if (closestPathBall != null)
+        if (ballHit)
         {
             float distance = Vector3.Distance(transform.position, target);
 
@@ -35,15 +26,9 @@ public class BallScript : MonoBehaviour
 
                 BallsManager.StopMovingBalls();
 
-                int closestIndex = closestPathBall.GetComponent<PathBallScript>().GetIndex();
-                int secondClosestIndex = -1;
+                float diameter = transform.localScale.x;
+                int index = BallsManager.FindInsertIndex(target, diameter);
 
-                if (secondClosestPathBall != null)
-                {
-                    secondClosestIndex = secondClosestPathBall.GetComponent<PathBallScript>().GetIndex();
-                }
-
-                int index = Math.Max(closestIndex, secondClosestIndex);
                 Debug.Log("insert index: " + index);
 
                 BallsPathScript ballsPathScript = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
@@ -82,19 +67,6 @@ public class BallScript : MonoBehaviour
         else if (tag == "PathBall")
         {
             ballHit = true;
-            float distance = Vector3.Distance(transform.position, other.gameObject.transform.position);
-
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closestPathBall = other.gameObject;
-            }
-
-            if (distance < secondMinDistance)
-            {
-                secondMinDistance = distance;
-                secondClosestPathBall = other.gameObject;
-            }
         }
     }
 }

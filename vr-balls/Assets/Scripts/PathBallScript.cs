@@ -147,22 +147,18 @@ public class PathBallScript : MonoBehaviour
 
                 if (otherIndex == index - 1)
                 {
-                    Debug.Log("before: " + (index - 1));
                     BallsManager.StopMovingBalls(0, index);
                     waitCount -= 1;
                 }
 
                 if (otherIndex == index + 1)
                 {
-                    Debug.Log("after: " + (index + 1));
-
                     BallsManager.StopMovingBalls(index + 1);
                     waitCount -= 1;
                 }
 
                 if (waitCount == 0)
                 {
-                    Debug.Log("waitCount " + waitCount);
                     isInserted = false;
                     BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward);
                     BallsManager.ChangeBallsSpeed(speed);
@@ -172,13 +168,8 @@ public class PathBallScript : MonoBehaviour
             else
             {
                 int ballAheadIndex = index - 1;
-                if (pathMovingDirection == PathMovingDirection.Backward)
-                {
-                    ballAheadIndex = index + 1;
-                }
 
-                if (ballAheadIndex < 0 || ballAheadIndex >= BallsManager.GetCount() ||
-                    ballAheadIndex == other.gameObject.GetComponent<PathBallScript>().index)
+                if (ballAheadIndex < 0 || ballAheadIndex == other.gameObject.GetComponent<PathBallScript>().index)
                 {
                     Show();
                     StartMoving();
