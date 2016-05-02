@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PathStopperScript : MonoBehaviour
+public class PathInsertStopperScript : MonoBehaviour
 {
+    private int newBallIndex = -1;
     private bool neighbourBallsExited = false;
-    public bool newBallInserted = false;
+    private bool newBallInserted = false;
 
-    public void SetNewBallInserted()
+    public PathRemoveStopperScript pathRemoveStopperScript;
+
+    public void SetNewBallInserted(int newBallIndex)
     {
+        this.newBallIndex = newBallIndex;
         newBallInserted = true;
         CheckForFinishedInsertion();
     }
@@ -18,14 +22,14 @@ public class PathStopperScript : MonoBehaviour
 
         if (tag == "PathBall")
         {
-            bool isHit = other.gameObject.GetComponent<PathBallScript>().GetIsHit();
+            bool toBeStopped = other.gameObject.GetComponent<PathBallScript>().GetToBeStopped();
 
-            if (isHit)
+            if (toBeStopped)
             {
                 BallsManager.StopMovingBalls();
                 neighbourBallsExited = true;
 
-                other.gameObject.GetComponent<PathBallScript>().SetIsHit(false);
+                other.gameObject.GetComponent<PathBallScript>().SetToBeStopped(false);
                 CheckForFinishedInsertion();
             }
         }
@@ -38,6 +42,12 @@ public class PathStopperScript : MonoBehaviour
             Destroy(gameObject);
             BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward);
             BallsManager.StartMovingBalls();
+
+            Transform stopperTransform = BallsManager.RemoveSameColoredBalls(newBallIndex);
+            if (stopperTransform != null)
+            {
+                Instantiate(pathRemoveStopperScript, stopperTransform.position, Quaternion.identity);
+            }
         }
     }
 }

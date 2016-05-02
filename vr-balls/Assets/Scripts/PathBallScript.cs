@@ -15,7 +15,7 @@ public class PathBallScript : MonoBehaviour
     private bool isInserted = false;
     private int waitCount = 0;
     private Vector3 target;
-    private bool isHit = false;
+    private bool toBeStopped = false;
 
     void Awake()
     {
@@ -33,7 +33,7 @@ public class PathBallScript : MonoBehaviour
         {
             float step = speed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, target, step);
-            float distance = Vector3.Distance(transform.position, target);
+            float distance = Mathf.Abs(Vector3.Distance(transform.position, target));
 
             if (distance < 0.03f)
             {
@@ -69,8 +69,11 @@ public class PathBallScript : MonoBehaviour
 
     public void SetPathMovingDirection(PathMovingDirection direction)
     {
-        pathMovingDirection = direction;
-        ChangeCurrentPointIndex();
+        if (pathMovingDirection != direction)
+        {
+            pathMovingDirection = direction;
+            ChangeCurrentPointIndex();
+        }
     }
 
     public void ChangeSpeed(float speed)
@@ -83,19 +86,18 @@ public class PathBallScript : MonoBehaviour
         target = newTarget;
     }
 
-    public bool GetIsHit()
+    public bool GetToBeStopped()
     {
-        return isHit;
+        return toBeStopped;
     }
 
-    public void SetIsHit(bool isHit)
+    public void SetToBeStopped(bool toBeStopped)
     {
-        this.isHit = isHit;
+        this.toBeStopped = toBeStopped;
     }
 
-    public void Init(int index, int currentPointIndex, Color color)
+    public void Init(int currentPointIndex, Color color)
     {
-        this.index = index;
         this.currentPointIndex = currentPointIndex;
         GetComponent<MeshRenderer>().material.color = color;
         Show();
@@ -165,5 +167,10 @@ public class PathBallScript : MonoBehaviour
         Color color = colors[randomIndex];
 
         GetComponent<MeshRenderer>().material.color = color;
+    }
+
+    public void SelfDestroy()
+    {
+        Destroy(gameObject);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public static class BallsManager
@@ -29,14 +30,18 @@ public static class BallsManager
             insertIndex += 1;
         }
 
-        for (int i = insertIndex; i < balls.Count; i++)
-        {
-            int previousIndex = balls[i].GetComponent<PathBallScript>().GetIndex();
-            balls[i].GetComponent<PathBallScript>().SetIndex(previousIndex + 1);
-        }
-
         balls.Insert(insertIndex, ball);
-        ball.GetComponent<PathBallScript>().Init(insertIndex, currentPointIndex + 1, color);
+        ResetBallsIndexes();
+
+        ball.GetComponent<PathBallScript>().Init(currentPointIndex + 1, color);
+    }
+
+    public static void ResetBallsIndexes()
+    {
+        for (int i = 0; i < balls.Count; i++)
+        {
+            balls[i].GetComponent<PathBallScript>().SetIndex(i);
+        }
     }
 
     public static GameObject GetBallAtIndex(int index)
@@ -56,7 +61,7 @@ public static class BallsManager
 
         if (ball != null)
         {
-            ballDistance = Vector3.Distance(ball.transform.position, position);
+            ballDistance = Mathf.Abs(Vector3.Distance(ball.transform.position, position));
         }
 
         return ballDistance;
@@ -107,5 +112,59 @@ public static class BallsManager
         {
             balls[i].GetComponent<PathBallScript>().ChangeSpeed(speed);
         }
+    }
+
+    public static Transform RemoveSameColoredBalls(int newBallIndex)
+    {
+        int startIndex = newBallIndex;
+        int endIndex = newBallIndex;
+
+        Color newBallColor = balls[newBallIndex].GetComponent<MeshRenderer>().material.color;
+        
+        int index = newBallIndex - 1;
+
+        while (index >= 0 && balls[index].GetComponent<MeshRenderer>().material.color == newBallColor)
+        {
+            startIndex = index;
+            index -= 1;
+        }
+
+        index = newBallIndex + 1;
+
+        while (index < balls.Count && balls[index].GetComponent<MeshRenderer>().material.color == newBallColor)
+        {
+            endIndex = index;
+            index += 1;
+        }
+
+        int count = endIndex - startIndex + 1;
+
+        if (count >= 3)
+        {
+            Transform stopperTransform = GetBallAtIndex(endIndex).transform;
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                balls[i].GetComponent<PathBallScript>().SelfDestroy();
+            }
+
+            balls.RemoveRange(startIndex, count);
+            ResetBallsIndexes();
+
+            GameObject ballAhead = GetBallAtIndex(startIndex - 1);
+
+            if (ballAhead != null)
+            {
+                StopMovingBalls();
+
+                ballAhead.GetComponent<PathBallScript>().SetToBeStopped(true);
+                SetBallsPathMovingDirection(PathMovingDirection.Backward, 0, startIndex);
+                StartMovingBalls(0, startIndex);
+
+                return stopperTransform;
+            }
+        }
+
+        return null;
     }
 }

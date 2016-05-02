@@ -20,6 +20,16 @@ public static class PathCollidersManager
         return pathColliders.Count;
     }
 
+    public static GameObject GetPathColliderAtIndex(int index)
+    {
+        if (index >= 0 && index < pathColliders.Count)
+        {
+            return pathColliders[index];
+        }
+
+        return null;
+    }
+
     public static int FindIndex(GameObject collider)
     {
         int index = -1;

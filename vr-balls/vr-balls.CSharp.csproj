@@ -94,8 +94,9 @@
     <Compile Include="Assets\Scripts\MainBallScript.cs" />
     <Compile Include="Assets\Scripts\PathBallScript.cs" />
     <Compile Include="Assets\Scripts\PathCollidersManager.cs" />
+    <Compile Include="Assets\Scripts\PathInsertStopperScript.cs" />
     <Compile Include="Assets\Scripts\PathMovingDirection.cs" />
-    <Compile Include="Assets\Scripts\PathStopperScript.cs" />
+    <Compile Include="Assets\Scripts\PathRemoveStopperScript.cs" />
     <Compile Include="Assets\iTweenEditor\Examples\StartAndStopTween.cs" />
     <Compile Include="Assets\iTweenEditor\Helper Classes\EventParamMappings.cs" />
     <Compile Include="Assets\iTweenEditor\Helper Classes\Vector3OrTransform.cs" />

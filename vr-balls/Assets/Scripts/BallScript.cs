@@ -14,7 +14,7 @@ public class BallScript : MonoBehaviour
     private float fireTargetSpeed = 10.0f;
     private bool rearHit = false;
 
-    public GameObject pathStopperPrefab;
+    public GameObject pathInsertStopperPrefab;
 
     void Update()
     {
@@ -23,7 +23,7 @@ public class BallScript : MonoBehaviour
 
         if (ballHit)
         {
-            float distance = Vector3.Distance(transform.position, target);
+            float distance = Mathf.Abs(Vector3.Distance(transform.position, target));
 
             if (distance < 0.03f)
             {
@@ -33,8 +33,8 @@ public class BallScript : MonoBehaviour
                 BallsPathScript ballsPathScript = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
                 ballsPathScript.InsertBall(insertIndex, insertCurrentPointIndex, target, color, rearHit);
 
-                PathStopperScript pathStopperScript = GameObject.FindWithTag("PathStopper").GetComponent<PathStopperScript>();
-                pathStopperScript.SetNewBallInserted();
+                PathInsertStopperScript pathInsertStopperScript = GameObject.FindWithTag("PathInsertStopper").GetComponent<PathInsertStopperScript>();
+                pathInsertStopperScript.SetNewBallInserted(insertIndex);
             }
         }
     }
@@ -54,11 +54,11 @@ public class BallScript : MonoBehaviour
             ballHit = true;
 
             Vector3 target = other.gameObject.transform.position;
-            Instantiate(pathStopperPrefab, target, Quaternion.identity);
+            Instantiate(pathInsertStopperPrefab, target, Quaternion.identity);
 
             insertIndex = other.gameObject.GetComponent<PathBallScript>().GetIndex();
             insertCurrentPointIndex = other.gameObject.GetComponent<PathBallScript>().GetCurrentPointIndex();
-            other.gameObject.GetComponent<PathBallScript>().SetIsHit(true);
+            other.gameObject.GetComponent<PathBallScript>().SetToBeStopped(true);
 
             float frontBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex - 1, transform.position);
             float rearBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex + 1, transform.position);
