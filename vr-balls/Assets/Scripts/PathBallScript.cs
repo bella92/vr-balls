@@ -15,6 +15,7 @@ public class PathBallScript : MonoBehaviour
     private bool isInserted = false;
     private int waitCount = 0;
     private Vector3 target;
+    private bool isHit = false;
 
     void Awake()
     {
@@ -80,6 +81,16 @@ public class PathBallScript : MonoBehaviour
     public void SetTarget(Vector3 newTarget)
     {
         target = newTarget;
+    }
+
+    public bool GetIsHit()
+    {
+        return isHit;
+    }
+
+    public void SetIsHit(bool isHit)
+    {
+        this.isHit = isHit;
     }
 
     public void Init(int index, int currentPointIndex, Color color)

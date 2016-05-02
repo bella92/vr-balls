@@ -18,10 +18,16 @@ public class PathStopperScript : MonoBehaviour
 
         if (tag == "PathBall")
         {
-            BallsManager.StopMovingBalls();
-            neighbourBallsExited = true;
+            bool isHit = other.gameObject.GetComponent<PathBallScript>().GetIsHit();
 
-            CheckForFinishedInsertion();
+            if (isHit)
+            {
+                BallsManager.StopMovingBalls();
+                neighbourBallsExited = true;
+
+                other.gameObject.GetComponent<PathBallScript>().SetIsHit(false);
+                CheckForFinishedInsertion();
+            }
         }
     }
 

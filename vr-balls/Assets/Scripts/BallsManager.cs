@@ -18,13 +18,13 @@ public static class BallsManager
         ball.GetComponent<PathBallScript>().SetIndex(index);
     }
 
-    public static void InsertBall(int index, int currentPointIndex, GameObject ball, Color color)
+    public static void InsertBall(int index, int currentPointIndex, GameObject ball, Color color, bool rearHit)
     {
         GameObject hitBall = GetBallAtIndex(index);
         PathMovingDirection pathMovingDirection = hitBall.GetComponent<PathBallScript>().GetPathMovingDirection();
 
         int insertIndex = index;
-        if (pathMovingDirection == PathMovingDirection.Forward)
+        if (rearHit)
         {
             insertIndex += 1;
         }

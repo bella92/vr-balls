@@ -71,10 +71,10 @@ public class BallsPathScript : MonoBehaviour
         BallsManager.AddBall(ball);
     }
 
-    public void InsertBall(int index, int currentPointIndex, Vector3 position, Color color)
+    public void InsertBall(int index, int currentPointIndex, Vector3 position, Color color, bool rearHit)
     {
         GameObject ball = (GameObject)Instantiate(pathBallPrefab, position, Quaternion.identity);
-        BallsManager.InsertBall(index, currentPointIndex, ball, color);
+        BallsManager.InsertBall(index, currentPointIndex, ball, color, rearHit);
     }
 
     private Vector3[] PathControlPointGenerator(Vector3[] path)
