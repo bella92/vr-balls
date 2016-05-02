@@ -5,7 +5,6 @@ using UnityEngine;
 public static class BallsManager
 {
     private static List<GameObject> balls = new List<GameObject>();
-    private static float makeRoomSpeed = 0.3f;
 
     public static int GetCount()
     {
@@ -19,31 +18,25 @@ public static class BallsManager
         ball.GetComponent<PathBallScript>().SetIndex(index);
     }
 
-    public static void InsertBall(int index, GameObject ball, Color color)
+    public static void InsertBall(int index, int currentPointIndex, GameObject ball, Color color)
     {
-        int currentPointIndex = balls[index].GetComponent<PathBallScript>().GetCurrentPointIndex();
+        GameObject hitBall = GetBallAtIndex(index);
+        PathMovingDirection pathMovingDirection = hitBall.GetComponent<PathBallScript>().GetPathMovingDirection();
 
-        balls.Insert(index, ball);
-        ball.GetComponent<PathBallScript>().Init(index, currentPointIndex + 1, color);
-
-        int waitCount = 2;
-        if (index == 0 || index == balls.Count - 1)
+        int insertIndex = index;
+        if (pathMovingDirection == PathMovingDirection.Forward)
         {
-            waitCount = 1;
+            insertIndex += 1;
         }
-        ball.GetComponent<PathBallScript>().SetWaitCount(waitCount);
 
-        for (int i = index + 1; i < balls.Count; i++)
+        for (int i = insertIndex; i < balls.Count; i++)
         {
             int previousIndex = balls[i].GetComponent<PathBallScript>().GetIndex();
             balls[i].GetComponent<PathBallScript>().SetIndex(previousIndex + 1);
         }
 
-        SetBallsPathMovingDirection(PathMovingDirection.Backward, index + 1, balls.Count);
-        ChangeBallsSpeed(makeRoomSpeed);
-
-        StartMovingBalls(0, index);
-        StartMovingBalls(index + 1, balls.Count);
+        balls.Insert(insertIndex, ball);
+        ball.GetComponent<PathBallScript>().Init(insertIndex, currentPointIndex + 1, color);
     }
 
     public static GameObject GetBallAtIndex(int index)
@@ -54,6 +47,19 @@ public static class BallsManager
         }
 
         return null;
+    }
+
+    public static float GetDistanceToBallAtIndex(int index, Vector3 position)
+    {
+        GameObject ball = GetBallAtIndex(index);
+        float ballDistance = float.MinValue;
+
+        if (ball != null)
+        {
+            ballDistance = Vector3.Distance(ball.transform.position, position);
+        }
+
+        return ballDistance;
     }
 
     public static void StopMovingBalls(int startIndex = 0, int endIndex = -1)
@@ -101,36 +107,5 @@ public static class BallsManager
         {
             balls[i].GetComponent<PathBallScript>().ChangeSpeed(speed);
         }
-    }
-
-    public static int FindInsertIndex(Vector3 position, float insideDiameter)
-    {
-        float minDistance = insideDiameter;
-        int minDistanceIndex = -1;
-
-        int secondMinDistanceIndex = -1;
-        float secondMinDistance = insideDiameter;
-
-        for (int i = 0; i < balls.Count; i++)
-        {
-            float distance = Vector3.Distance(position, balls[i].transform.position);
-
-            if (distance < minDistance)
-            {
-                secondMinDistance = minDistance;
-                secondMinDistanceIndex = minDistanceIndex;
-
-                minDistance = distance;
-                minDistanceIndex = i;
-            }
-            else if (distance < secondMinDistance && distance != minDistance)
-            {
-                secondMinDistance = distance;
-                secondMinDistanceIndex = i;
-            }
-        }
-
-        int index = Math.Max(minDistanceIndex, secondMinDistanceIndex);
-        return index;
     }
 }

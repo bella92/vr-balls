@@ -4,18 +4,16 @@ using UnityEngine;
 
 public class PathBallScript : MonoBehaviour
 {
-    public float speed = 0.05f;
-
-    private int currentPointIndex = 0;
-    private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
+    private float speed = 1f;
     public bool canMove = false;
     public PathMovingDirection pathMovingDirection = PathMovingDirection.Forward;
-    private bool isInserted = false;
-    private int waitCount = 0;
-    private bool isShown = false;
-
+    public bool isShown = false;
     public int index = -1;
 
+    public int currentPointIndex = 0;
+    private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
+    private bool isInserted = false;
+    private int waitCount = 0;
     private Vector3 target;
 
     void Awake()
@@ -50,7 +48,8 @@ public class PathBallScript : MonoBehaviour
         if (currentPointIndex >= PathCollidersManager.GetCount())
         {
             //TODO: Game Over
-            Destroy(gameObject);
+            currentPointIndex -= 1;
+            BallsManager.StopMovingBalls();
         }
         else if (currentPointIndex < 0)
         {
@@ -62,10 +61,9 @@ public class PathBallScript : MonoBehaviour
         }
     }
 
-    public void TogglePathMovingDirection()
+    public PathMovingDirection GetPathMovingDirection()
     {
-        pathMovingDirection = (PathMovingDirection)(-1 * (int)pathMovingDirection);
-        ChangeCurrentPointIndex();
+        return pathMovingDirection;
     }
 
     public void SetPathMovingDirection(PathMovingDirection direction)
@@ -86,7 +84,6 @@ public class PathBallScript : MonoBehaviour
 
     public void Init(int index, int currentPointIndex, Color color)
     {
-        isInserted = true;
         this.index = index;
         this.currentPointIndex = currentPointIndex;
         GetComponent<MeshRenderer>().material.color = color;
@@ -141,39 +138,12 @@ public class PathBallScript : MonoBehaviour
 
         if (tag == "PathBall")
         {
-            if (isInserted)
+            int ballAheadIndex = index - 1;
+
+            if (currentPointIndex == 0 && (ballAheadIndex < 0 || ballAheadIndex == other.gameObject.GetComponent<PathBallScript>().index))
             {
-                int otherIndex = other.gameObject.GetComponent<PathBallScript>().GetIndex();
-
-                if (otherIndex == index - 1)
-                {
-                    BallsManager.StopMovingBalls(0, index);
-                    waitCount -= 1;
-                }
-
-                if (otherIndex == index + 1)
-                {
-                    BallsManager.StopMovingBalls(index + 1);
-                    waitCount -= 1;
-                }
-
-                if (waitCount == 0)
-                {
-                    isInserted = false;
-                    BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward);
-                    BallsManager.ChangeBallsSpeed(speed);
-                    BallsManager.StartMovingBalls();
-                }
-            }
-            else
-            {
-                int ballAheadIndex = index - 1;
-
-                if (ballAheadIndex < 0 || ballAheadIndex == other.gameObject.GetComponent<PathBallScript>().index)
-                {
-                    Show();
-                    StartMoving();
-                }
+                Show();
+                StartMoving();
             }
         }
     }

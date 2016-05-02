@@ -5,13 +5,18 @@ using System;
 public class BallScript : MonoBehaviour
 {
     private Vector3 target;
-    private Vector3 fireTarget;
-    private bool isPathColliderHit = false;
     private bool ballHit = false;
+    private int insertIndex = -1;
+    private int insertCurrentPointIndex = -1;
+    private float speed;
+    private float targetSpeed = 1f;
+    private float fireTargetSpeed = 10.0f;
+
+    public GameObject pathStopperPrefab;
 
     void Update()
     {
-        float step = 12.0f * Time.deltaTime;
+        float step = speed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, target, step);
 
         if (ballHit)
@@ -20,53 +25,54 @@ public class BallScript : MonoBehaviour
 
             if (distance < 0.03f)
             {
-                Debug.Log("reached");
-
                 Destroy(gameObject);
-
-                BallsManager.StopMovingBalls();
-
-                float diameter = transform.localScale.x;
-                int index = BallsManager.FindInsertIndex(target, diameter);
-
-                Debug.Log("insert index: " + index);
-
-                BallsPathScript ballsPathScript = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
+                PathStopperScript pathStopperScript = GameObject.FindWithTag("PathStopper").GetComponent<PathStopperScript>();
+                pathStopperScript.SetNewBallInserted();
 
                 Color color = GetComponent<MeshRenderer>().material.color;
-                ballsPathScript.InsertBall(index, target, color);
+                BallsPathScript ballsPathScript = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
+                ballsPathScript.InsertBall(insertIndex, insertCurrentPointIndex, target, color);
             }
         }
-        else
-        {
-            SetTarget(fireTarget);
-        }
     }
 
-    public void SetFireTarget(Vector3 newFireTarget)
-    {
-        fireTarget = newFireTarget;
-        target = newFireTarget;
-    }
-
-    public void SetTarget(Vector3 newTarget)
+    public void SetTarget(Vector3 newTarget, bool isFireTarget = false)
     {
         target = newTarget;
+        speed = isFireTarget ? fireTargetSpeed : targetSpeed;
     }
 
-    void OnTriggerStay(Collider other)
+    void OnTriggerEnter(Collider other)
     {
         string tag = other.gameObject.tag;
 
-        if (ballHit && !isPathColliderHit && tag == "PathCollider")
-        {
-            isPathColliderHit = true;
-
-            SetTarget(other.gameObject.transform.position);
-        }
-        else if (tag == "PathBall")
+        if (tag == "PathBall" && !ballHit && other.GetComponent<PathBallScript>().isShown)
         {
             ballHit = true;
+
+            Vector3 target = other.gameObject.transform.position;
+            Instantiate(pathStopperPrefab, target, Quaternion.identity);
+
+            insertIndex = other.gameObject.GetComponent<PathBallScript>().GetIndex();
+            insertCurrentPointIndex = other.gameObject.GetComponent<PathBallScript>().GetCurrentPointIndex();
+
+            float frontBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex - 1, transform.position);
+            float rearBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex + 1, transform.position);
+
+            if (frontBallDistance <= rearBallDistance)
+            {
+                BallsManager.StopMovingBalls();
+                BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Backward, insertIndex);
+                BallsManager.StartMovingBalls(insertIndex);
+            }
+            else
+            {
+                BallsManager.StopMovingBalls();
+                BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward, 0, insertIndex + 1);
+                BallsManager.StartMovingBalls(0, insertIndex + 1);
+            }
+
+            SetTarget(target);
         }
     }
 }

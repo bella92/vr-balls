@@ -29,7 +29,7 @@ public class BallsPathScript : MonoBehaviour
 
         InitTrail();
 
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 3; i++)
         {
             AddBall(i);
         }
@@ -71,10 +71,10 @@ public class BallsPathScript : MonoBehaviour
         BallsManager.AddBall(ball);
     }
 
-    public void InsertBall(int index, Vector3 position, Color color)
+    public void InsertBall(int index, int currentPointIndex, Vector3 position, Color color)
     {
         GameObject ball = (GameObject)Instantiate(pathBallPrefab, position, Quaternion.identity);
-        BallsManager.InsertBall(index, ball, color);
+        BallsManager.InsertBall(index, currentPointIndex, ball, color);
     }
 
     private Vector3[] PathControlPointGenerator(Vector3[] path)

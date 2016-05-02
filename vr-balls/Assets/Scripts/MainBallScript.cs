@@ -37,7 +37,7 @@ public class MainBallScript : MonoBehaviour
 
         GameObject ball = (GameObject)Instantiate(ballPrefab, position, Quaternion.identity);
         ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
-        ball.GetComponent<BallScript>().SetFireTarget(direction * 1000);
+        ball.GetComponent<BallScript>().SetTarget(direction * 1000, true);
     }
 
     void ChangeColor()
