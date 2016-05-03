@@ -6,8 +6,12 @@ public class PathInsertStopperScript : MonoBehaviour
     private int newBallIndex = -1;
     private bool neighbourBallsExited = false;
     private bool newBallInserted = false;
+    private BallsPathScript ballsPath;
 
-    public GameObject pathRemoveStopper;
+    void Start()
+    {
+        ballsPath = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
+    }
 
     public void SetNewBallInserted(int newBallIndex)
     {
@@ -26,7 +30,7 @@ public class PathInsertStopperScript : MonoBehaviour
 
             if (toBeStopped)
             {
-                BallsManager.StopMovingBalls();
+                ballsPath.StopMovingBalls();
                 neighbourBallsExited = true;
 
                 other.gameObject.GetComponent<PathBallScript>().SetToBeStopped(false);
@@ -40,14 +44,10 @@ public class PathInsertStopperScript : MonoBehaviour
         if (neighbourBallsExited && newBallInserted)
         {
             Destroy(gameObject);
-            BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward);
-            BallsManager.StartMovingBalls();
+            ballsPath.SetBallsPathMovingDirection(PathMovingDirection.Forward);
+            ballsPath.StartMovingBalls();
 
-            Transform stopperTransform = BallsManager.RemoveSameColoredBalls(newBallIndex);
-            if (stopperTransform != null)
-            {
-                Instantiate(pathRemoveStopper, stopperTransform.position, Quaternion.identity);
-            }
+            ballsPath.RemoveSameColoredBalls(newBallIndex);
         }
     }
 }

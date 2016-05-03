@@ -1,8 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor;
 
 public class PathRemoveStopperScript : MonoBehaviour
 {
+    private BallsPathScript ballsPath;
+
+    void Start()
+    {
+        ballsPath = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
+    }
+
     void OnTriggerStay(Collider other)
     {
         string tag = other.gameObject.tag;
@@ -13,25 +21,23 @@ public class PathRemoveStopperScript : MonoBehaviour
 
             if (toBeStopped)
             {
+                float speed = other.gameObject.GetComponent<PathBallScript>().GetSpeed();
                 float distance = Mathf.Abs(Vector3.Distance(transform.position, other.transform.position));
 
-                if (distance <= Time.deltaTime)
+                if (distance <= speed * Time.deltaTime)
                 {
                     other.transform.position = transform.position;
                     other.gameObject.GetComponent<PathBallScript>().SetToBeStopped(false);
 
                     Destroy(gameObject);
 
-                    BallsManager.StopMovingBalls();
-                    BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward);
-                    BallsManager.StartMovingBalls();
+                    ballsPath.StopMovingBalls();
+                    ballsPath.SetBallsSpeed(1f);
+                    ballsPath.SetBallsPathMovingDirection(PathMovingDirection.Forward);
+                    ballsPath.StartMovingBalls();
 
                     int newBallIndex = other.gameObject.GetComponent<PathBallScript>().GetIndex();
-                    Transform stopperTransform = BallsManager.RemoveSameColoredBalls(newBallIndex);
-                    if (stopperTransform != null)
-                    {
-                        Instantiate(gameObject, stopperTransform.position, Quaternion.identity);
-                    }
+                    ballsPath.RemoveSameColoredBalls(newBallIndex);
                 }
             }
         }

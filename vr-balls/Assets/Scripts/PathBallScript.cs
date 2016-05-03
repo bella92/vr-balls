@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class PathBallScript : MonoBehaviour
 {
-    private float speed = 7f;
     public bool canMove = false;
     public PathMovingDirection pathMovingDirection = PathMovingDirection.Forward;
     public int index = -1;
-
     public int currentPointIndex = 0;
+
+    private float speed = 7f;
+    private BallsPathScript ballsPath;
     private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
     private bool isInserted = false;
     private int waitCount = 0;
@@ -21,6 +22,11 @@ public class PathBallScript : MonoBehaviour
     void Awake()
     {
         SetRandomColor();
+    }
+
+    void Start()
+    {
+        ballsPath = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
     }
 
     void FixedUpdate()
@@ -81,6 +87,11 @@ public class PathBallScript : MonoBehaviour
             pathMovingDirection = direction;
             ChangeCurrentPointIndex();
         }
+    }
+
+    public float GetSpeed()
+    {
+        return speed;
     }
 
     public void SetSpeed(float speed)
@@ -165,9 +176,9 @@ public class PathBallScript : MonoBehaviour
 
         if (tag == "EntrancePoint" && pathMovingDirection == PathMovingDirection.Forward)
         {
-            if (index == BallsManager.GetCount() / 3)
+            if (index == ballsPath.GetCount() / 3)
             {
-                BallsManager.SetBallsSpeed(1f);
+                ballsPath.SetBallsSpeed(1f);
             }
 
             Show();

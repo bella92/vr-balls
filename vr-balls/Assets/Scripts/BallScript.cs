@@ -13,8 +13,14 @@ public class BallScript : MonoBehaviour
     private float targetSpeed = 1f;
     private float fireTargetSpeed = 10.0f;
     private bool rearHit = false;
+    private BallsPathScript ballsPath;
 
     public GameObject pathInsertStopperPrefab;
+
+    void Start()
+    {
+        ballsPath = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
+    }
 
     void FixedUpdate()
     {
@@ -64,22 +70,22 @@ public class BallScript : MonoBehaviour
                 insertCurrentPointIndex = other.gameObject.GetComponent<PathBallScript>().GetCurrentPointIndex();
                 other.gameObject.GetComponent<PathBallScript>().SetToBeStopped(true);
 
-                float frontBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex - 1, transform.position);
-                float rearBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex + 1, transform.position);
+                float frontBallDistance = ballsPath.GetDistanceToBallAtIndex(insertIndex - 1, transform.position);
+                float rearBallDistance = ballsPath.GetDistanceToBallAtIndex(insertIndex + 1, transform.position);
 
                 if (frontBallDistance <= rearBallDistance)
                 {
-                    BallsManager.StopMovingBalls();
-                    BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Backward, insertIndex);
-                    BallsManager.StartMovingBalls(insertIndex);
+                    ballsPath.StopMovingBalls();
+                    ballsPath.SetBallsPathMovingDirection(PathMovingDirection.Backward, insertIndex);
+                    ballsPath.StartMovingBalls(insertIndex);
                 }
                 else
                 {
                     rearHit = true;
 
-                    BallsManager.StopMovingBalls();
-                    BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward, 0, insertIndex + 1);
-                    BallsManager.StartMovingBalls(0, insertIndex + 1);
+                    ballsPath.StopMovingBalls();
+                    ballsPath.SetBallsPathMovingDirection(PathMovingDirection.Forward, 0, insertIndex + 1);
+                    ballsPath.StartMovingBalls(0, insertIndex + 1);
                 }
 
                 SetTarget(target);

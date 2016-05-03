@@ -11,8 +11,10 @@ public class BallsPathScript : MonoBehaviour
     public GameObject pathColliderPrefab;
     public int collidersDensity = 20;
     public float hiddenPart = 0.3f;
+    public GameObject pathRemoveStopper;
 
     private iTweenPath path;
+    private List<GameObject> balls = new List<GameObject>();
 
     void Start()
     {
@@ -49,13 +51,13 @@ public class BallsPathScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward);
-            BallsManager.StartMovingBalls();
+            SetBallsPathMovingDirection(PathMovingDirection.Forward);
+            StartMovingBalls();
         }
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            BallsManager.StopMovingBalls();
+            StopMovingBalls();
         }
     }
 
@@ -78,13 +80,13 @@ public class BallsPathScript : MonoBehaviour
         ball.GetComponent<PathBallScript>().ChangeCurrentPointIndex();
         ball.GetComponent<PathBallScript>().StartMoving();
 
-        BallsManager.AddBall(ball);
+        AddBall(ball);
     }
 
     public void InsertBall(int index, int currentPointIndex, Vector3 position, Color color, bool rearHit)
     {
         GameObject ball = (GameObject)Instantiate(pathBallPrefab, position, Quaternion.identity);
-        BallsManager.InsertBall(index, currentPointIndex, ball, color, rearHit);
+        InsertBall(index, currentPointIndex, ball, color, rearHit);
     }
 
     private Vector3[] PathControlPointGenerator(Vector3[] path)
@@ -119,7 +121,7 @@ public class BallsPathScript : MonoBehaviour
         return (vector3s);
     }
 
-    private static Vector3 Interp(Vector3[] pts, float t)
+    private Vector3 Interp(Vector3[] pts, float t)
     {
         int numSections = pts.Length - 3;
         int currPt = Mathf.Min(Mathf.FloorToInt(t * (float)numSections), numSections - 1);
@@ -136,5 +138,170 @@ public class BallsPathScript : MonoBehaviour
             + (-a + c) * u
             + 2f * b
         );
+    }
+
+    public int GetCount()
+    {
+        return balls.Count;
+    }
+
+    public void AddBall(GameObject ball)
+    {
+        balls.Add(ball);
+        int index = balls.Count - 1;
+        ball.GetComponent<PathBallScript>().SetIndex(index);
+    }
+
+    public void InsertBall(int index, int currentPointIndex, GameObject ball, Color color, bool rearHit)
+    {
+        GameObject hitBall = GetBallAtIndex(index);
+        PathMovingDirection pathMovingDirection = hitBall.GetComponent<PathBallScript>().GetPathMovingDirection();
+
+        int insertIndex = index;
+        if (rearHit)
+        {
+            insertIndex += 1;
+        }
+
+        balls.Insert(insertIndex, ball);
+        ResetBallsIndexes();
+
+        ball.GetComponent<PathBallScript>().Init(currentPointIndex + 1, color);
+    }
+
+    public void ResetBallsIndexes()
+    {
+        for (int i = 0; i < balls.Count; i++)
+        {
+            balls[i].GetComponent<PathBallScript>().SetIndex(i);
+        }
+    }
+
+    public GameObject GetBallAtIndex(int index)
+    {
+        if (index >= 0 && index < balls.Count)
+        {
+            return balls[index];
+        }
+
+        return null;
+    }
+
+    public float GetDistanceToBallAtIndex(int index, Vector3 position)
+    {
+        GameObject ball = GetBallAtIndex(index);
+        float ballDistance = float.MinValue;
+
+        if (ball != null)
+        {
+            ballDistance = Mathf.Abs(Vector3.Distance(ball.transform.position, position));
+        }
+
+        return ballDistance;
+    }
+
+    public void StopMovingBalls(int startIndex = 0, int endIndex = -1)
+    {
+        if (endIndex == -1)
+        {
+            endIndex = balls.Count;
+        }
+
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            balls[i].GetComponent<PathBallScript>().StopMoving();
+        }
+    }
+
+    public void StartMovingBalls(int startIndex = 0, int endIndex = -1)
+    {
+        if (endIndex == -1)
+        {
+            endIndex = balls.Count;
+        }
+
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            balls[i].GetComponent<PathBallScript>().StartMoving();
+        }
+    }
+
+    public void SetBallsPathMovingDirection(PathMovingDirection direction, int startIndex = 0, int endIndex = -1)
+    {
+        if (endIndex == -1)
+        {
+            endIndex = balls.Count;
+        }
+
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            balls[i].GetComponent<PathBallScript>().SetPathMovingDirection(direction);
+        }
+    }
+
+    public void SetBallsSpeed(float speed, int startIndex = 0, int endIndex = -1)
+    {
+        if (endIndex == -1)
+        {
+            endIndex = balls.Count;
+        }
+
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            balls[i].GetComponent<PathBallScript>().SetSpeed(speed);
+        }
+    }
+
+    public void RemoveSameColoredBalls(int newBallIndex)
+    {
+        int startIndex = newBallIndex;
+        int endIndex = newBallIndex;
+
+        Color newBallColor = balls[newBallIndex].GetComponent<MeshRenderer>().material.color;
+        
+        int index = newBallIndex - 1;
+
+        while (index >= 0 && balls[index].GetComponent<MeshRenderer>().material.color == newBallColor)
+        {
+            startIndex = index;
+            index -= 1;
+        }
+
+        index = newBallIndex + 1;
+
+        while (index < balls.Count && balls[index].GetComponent<MeshRenderer>().material.color == newBallColor)
+        {
+            endIndex = index;
+            index += 1;
+        }
+
+        int count = endIndex - startIndex + 1;
+
+        if (count >= 3)
+        {
+            Transform stopperTransform = GetBallAtIndex(endIndex).transform;
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                balls[i].GetComponent<PathBallScript>().SelfDestroy();
+            }
+
+            balls.RemoveRange(startIndex, count);
+            ResetBallsIndexes();
+
+            GameObject ballAhead = GetBallAtIndex(startIndex - 1);
+
+            if (ballAhead != null)
+            {
+                StopMovingBalls();
+
+                Instantiate(pathRemoveStopper, stopperTransform.position, Quaternion.identity);
+
+                ballAhead.GetComponent<PathBallScript>().SetToBeStopped(true);
+                SetBallsSpeed(4f, 0, startIndex);
+                SetBallsPathMovingDirection(PathMovingDirection.Backward, 0, startIndex);
+                StartMovingBalls(0, startIndex);
+            }
+        }
     }
 }
