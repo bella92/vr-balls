@@ -29,7 +29,7 @@ public class BallsPathScript : MonoBehaviour
 
         InitTrail();
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 12; i++)
         {
             AddBall(i);
         }

@@ -7,7 +7,7 @@ public class PathInsertStopperScript : MonoBehaviour
     private bool neighbourBallsExited = false;
     private bool newBallInserted = false;
 
-    public PathRemoveStopperScript pathRemoveStopperScript;
+    public GameObject pathRemoveStopper;
 
     public void SetNewBallInserted(int newBallIndex)
     {
@@ -46,7 +46,7 @@ public class PathInsertStopperScript : MonoBehaviour
             Transform stopperTransform = BallsManager.RemoveSameColoredBalls(newBallIndex);
             if (stopperTransform != null)
             {
-                Instantiate(pathRemoveStopperScript, stopperTransform.position, Quaternion.identity);
+                Instantiate(pathRemoveStopper, stopperTransform.position, Quaternion.identity);
             }
         }
     }

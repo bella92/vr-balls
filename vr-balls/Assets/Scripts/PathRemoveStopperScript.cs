@@ -17,7 +17,7 @@ public class PathRemoveStopperScript : MonoBehaviour
 
                 if (distance < 0.03f)
                 {
-                    //other.transform.position = transform.position;
+                    other.transform.position = transform.position;
                     other.gameObject.GetComponent<PathBallScript>().SetToBeStopped(false);
 
                     Destroy(gameObject);
@@ -25,6 +25,13 @@ public class PathRemoveStopperScript : MonoBehaviour
                     BallsManager.StopMovingBalls();
                     BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward);
                     BallsManager.StartMovingBalls();
+
+                    int newBallIndex = other.gameObject.GetComponent<PathBallScript>().GetIndex();
+                    Transform stopperTransform = BallsManager.RemoveSameColoredBalls(newBallIndex);
+                    if (stopperTransform != null)
+                    {
+                        Instantiate(gameObject, stopperTransform.position, Quaternion.identity);
+                    }
                 }
             }
         }
