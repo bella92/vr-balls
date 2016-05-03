@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PathBallScript : MonoBehaviour
 {
-    private float speed = 1;
+    private float speed = 7f;
     public bool canMove = false;
     public PathMovingDirection pathMovingDirection = PathMovingDirection.Forward;
     public int index = -1;
@@ -13,8 +13,10 @@ public class PathBallScript : MonoBehaviour
     private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
     private bool isInserted = false;
     private int waitCount = 0;
+    private Vector3 previousTarget;
     private Vector3 target;
     private bool toBeStopped = false;
+    private float traveledDistance = 0f;
 
     void Awake()
     {
@@ -23,24 +25,6 @@ public class PathBallScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        GameObject ballAhead = BallsManager.GetBallAtIndex(index - 1);
-        if (currentPointIndex == 0)
-        {
-            bool canStart = true;
-
-            if (ballAhead != null)
-            {
-                float distance = Mathf.Abs(Vector3.Distance(transform.position, ballAhead.transform.position));
-                canStart = distance >= transform.localScale.x;
-            }
-
-            if (canStart)
-            {
-                ChangeCurrentPointIndex();
-                StartMoving();
-            }
-        }
-
         Move();
     }
 
@@ -49,18 +33,19 @@ public class PathBallScript : MonoBehaviour
         if (canMove)
         {
             float step = speed * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, target, step);
+            traveledDistance += speed * Time.deltaTime;
+
+            transform.position = Vector3.MoveTowards(previousTarget, target, traveledDistance);
             float distance = Mathf.Abs(Vector3.Distance(transform.position, target));
 
             if (distance <= step)
             {
-                transform.position = target;
                 ChangeCurrentPointIndex();
             }
         }
     }
 
-    private void ChangeCurrentPointIndex()
+    public void ChangeCurrentPointIndex()
     {
         currentPointIndex += (int)pathMovingDirection;
 
@@ -78,6 +63,8 @@ public class PathBallScript : MonoBehaviour
         }
         else
         {
+            traveledDistance = 0f;
+            previousTarget = transform.position;
             target = PathCollidersManager.GetColliderPosition(currentPointIndex);
         }
     }
@@ -98,12 +85,9 @@ public class PathBallScript : MonoBehaviour
 
     public void SetSpeed(float speed)
     {
+        traveledDistance = 0f;
+        previousTarget = transform.position;
         this.speed = speed;
-    }
-
-    public void SetTarget(Vector3 newTarget)
-    {
-        target = newTarget;
     }
 
     public bool GetToBeStopped()
@@ -185,7 +169,7 @@ public class PathBallScript : MonoBehaviour
             {
                 BallsManager.SetBallsSpeed(1f);
             }
-            
+
             Show();
         }
     }

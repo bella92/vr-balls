@@ -39,7 +39,7 @@ public class BallsPathScript : MonoBehaviour
 
         InitTrail();
 
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 20; i++)
         {
             AddBall(i);
         }
@@ -67,14 +67,16 @@ public class BallsPathScript : MonoBehaviour
 
     private void AddBall(int index)
     {
-        Vector3 spawnPoint = PathCollidersManager.GetColliderPosition(0);
+        Vector3 firstPoint = PathCollidersManager.GetColliderPosition(0);
+        Vector3 secondPoint = PathCollidersManager.GetColliderPosition(1);
+
+        Vector3 differnce = (firstPoint - secondPoint).normalized;
+        Vector3 spawnPoint = firstPoint + differnce * pathBallPrefab.transform.localScale.x * (index + 1);
 
         GameObject ball = (GameObject)Instantiate(pathBallPrefab, spawnPoint, Quaternion.identity);
-        
-        if (index == 0)
-        {
-            ball.GetComponent<PathBallScript>().StartMoving();
-        }
+
+        ball.GetComponent<PathBallScript>().ChangeCurrentPointIndex();
+        ball.GetComponent<PathBallScript>().StartMoving();
 
         BallsManager.AddBall(ball);
     }
