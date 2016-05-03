@@ -106,11 +106,16 @@ public static class BallsManager
         }
     }
 
-    public static void ChangeBallsSpeed(float speed)
+    public static void SetBallsSpeed(float speed, int startIndex = 0, int endIndex = -1)
     {
-        for (int i = 0; i < balls.Count; i++)
+        if (endIndex == -1)
         {
-            balls[i].GetComponent<PathBallScript>().ChangeSpeed(speed);
+            endIndex = balls.Count;
+        }
+
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            balls[i].GetComponent<PathBallScript>().SetSpeed(speed);
         }
     }
 

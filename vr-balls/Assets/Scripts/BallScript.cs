@@ -16,7 +16,7 @@ public class BallScript : MonoBehaviour
 
     public GameObject pathInsertStopperPrefab;
 
-    void Update()
+    void FixedUpdate()
     {
         float step = speed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, target, step);
@@ -25,7 +25,7 @@ public class BallScript : MonoBehaviour
         {
             float distance = Mathf.Abs(Vector3.Distance(transform.position, target));
 
-            if (distance < 0.03f)
+            if (distance <= Time.deltaTime)
             {
                 Destroy(gameObject);
 
@@ -49,36 +49,41 @@ public class BallScript : MonoBehaviour
     {
         string tag = other.gameObject.tag;
 
-        if (tag == "PathBall" && !ballHit && other.GetComponent<PathBallScript>().isShown)
+        if (tag == "PathBall" && !ballHit)
         {
-            ballHit = true;
+            bool isShown = other.GetComponent<PathBallScript>().GetIsShown();
 
-            Vector3 target = other.gameObject.transform.position;
-            Instantiate(pathInsertStopperPrefab, target, Quaternion.identity);
-
-            insertIndex = other.gameObject.GetComponent<PathBallScript>().GetIndex();
-            insertCurrentPointIndex = other.gameObject.GetComponent<PathBallScript>().GetCurrentPointIndex();
-            other.gameObject.GetComponent<PathBallScript>().SetToBeStopped(true);
-
-            float frontBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex - 1, transform.position);
-            float rearBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex + 1, transform.position);
-
-            if (frontBallDistance <= rearBallDistance)
+            if (isShown)
             {
-                BallsManager.StopMovingBalls();
-                BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Backward, insertIndex);
-                BallsManager.StartMovingBalls(insertIndex);
-            }
-            else
-            {
-                rearHit = true;
+                ballHit = true;
 
-                BallsManager.StopMovingBalls();
-                BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward, 0, insertIndex + 1);
-                BallsManager.StartMovingBalls(0, insertIndex + 1);
-            }
+                Vector3 target = other.gameObject.transform.position;
+                Instantiate(pathInsertStopperPrefab, target, Quaternion.identity);
 
-            SetTarget(target);
+                insertIndex = other.gameObject.GetComponent<PathBallScript>().GetIndex();
+                insertCurrentPointIndex = other.gameObject.GetComponent<PathBallScript>().GetCurrentPointIndex();
+                other.gameObject.GetComponent<PathBallScript>().SetToBeStopped(true);
+
+                float frontBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex - 1, transform.position);
+                float rearBallDistance = BallsManager.GetDistanceToBallAtIndex(insertIndex + 1, transform.position);
+
+                if (frontBallDistance <= rearBallDistance)
+                {
+                    BallsManager.StopMovingBalls();
+                    BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Backward, insertIndex);
+                    BallsManager.StartMovingBalls(insertIndex);
+                }
+                else
+                {
+                    rearHit = true;
+
+                    BallsManager.StopMovingBalls();
+                    BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward, 0, insertIndex + 1);
+                    BallsManager.StartMovingBalls(0, insertIndex + 1);
+                }
+
+                SetTarget(target);
+            }
         }
     }
 }

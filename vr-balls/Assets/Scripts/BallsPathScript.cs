@@ -2,12 +2,15 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 
 public class BallsPathScript : MonoBehaviour
 {
     public GameObject pathBallPrefab;
     public GameObject pathTrailPrefab;
     public GameObject pathColliderPrefab;
+    public int collidersDensity = 20;
+    public float hiddenPart = 0.3f;
 
     private iTweenPath path;
 
@@ -17,19 +20,26 @@ public class BallsPathScript : MonoBehaviour
         Vector3[] nodes = iTweenPath.GetPath(path.pathName);
         Vector3[] vector3s = PathControlPointGenerator(nodes);
 
-        int smoothAmount = nodes.Length * 20;
+        int collidersAmount = nodes.Length * collidersDensity;
+        int entranceIndex = Mathf.CeilToInt(collidersAmount * hiddenPart);
 
-        for (int i = 1; i <= smoothAmount; i++)
+        for (int i = 1; i <= collidersAmount; i++)
         {
-            float pm = (float)i / smoothAmount;
+            float pm = (float)i / collidersAmount;
             Vector3 currentPoint = Interp(vector3s, pm);
             GameObject pathCollider = (GameObject)Instantiate(pathColliderPrefab, currentPoint, Quaternion.identity);
             PathCollidersManager.AddCollider(pathCollider);
+
+            if (i == entranceIndex)
+            {
+                pathCollider.tag = "EntrancePoint";
+                pathCollider.GetComponent<MeshRenderer>().enabled = true;
+            }
         }
 
         InitTrail();
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 6; i++)
         {
             AddBall(i);
         }
@@ -40,7 +50,6 @@ public class BallsPathScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             BallsManager.SetBallsPathMovingDirection(PathMovingDirection.Forward);
-            BallsManager.ChangeBallsSpeed(1f);
             BallsManager.StartMovingBalls();
         }
 
@@ -61,10 +70,9 @@ public class BallsPathScript : MonoBehaviour
         Vector3 spawnPoint = PathCollidersManager.GetColliderPosition(0);
 
         GameObject ball = (GameObject)Instantiate(pathBallPrefab, spawnPoint, Quaternion.identity);
-
+        
         if (index == 0)
         {
-            ball.GetComponent<PathBallScript>().Show();
             ball.GetComponent<PathBallScript>().StartMoving();
         }
 

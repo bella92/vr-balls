@@ -15,7 +15,7 @@ public class PathRemoveStopperScript : MonoBehaviour
             {
                 float distance = Mathf.Abs(Vector3.Distance(transform.position, other.transform.position));
 
-                if (distance < 0.03f)
+                if (distance <= Time.deltaTime)
                 {
                     other.transform.position = transform.position;
                     other.gameObject.GetComponent<PathBallScript>().SetToBeStopped(false);

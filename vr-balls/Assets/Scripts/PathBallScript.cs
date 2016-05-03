@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class PathBallScript : MonoBehaviour
 {
-    private float speed = 1f;
+    private float speed = 1;
     public bool canMove = false;
     public PathMovingDirection pathMovingDirection = PathMovingDirection.Forward;
-    public bool isShown = false;
     public int index = -1;
 
     public int currentPointIndex = 0;
@@ -22,21 +21,40 @@ public class PathBallScript : MonoBehaviour
         SetRandomColor();
     }
 
-    void Update()
+    void FixedUpdate()
     {
+        GameObject ballAhead = BallsManager.GetBallAtIndex(index - 1);
+        if (currentPointIndex == 0)
+        {
+            bool canStart = true;
+
+            if (ballAhead != null)
+            {
+                float distance = Mathf.Abs(Vector3.Distance(transform.position, ballAhead.transform.position));
+                canStart = distance >= transform.localScale.x;
+            }
+
+            if (canStart)
+            {
+                ChangeCurrentPointIndex();
+                StartMoving();
+            }
+        }
+
         Move();
     }
 
     private void Move()
     {
-        if (isShown && canMove)
+        if (canMove)
         {
             float step = speed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, target, step);
             float distance = Mathf.Abs(Vector3.Distance(transform.position, target));
 
-            if (distance < 0.03f)
+            if (distance <= step)
             {
+                transform.position = target;
                 ChangeCurrentPointIndex();
             }
         }
@@ -50,11 +68,13 @@ public class PathBallScript : MonoBehaviour
         {
             //TODO: Game Over
             currentPointIndex -= 1;
-            BallsManager.StopMovingBalls();
+            StopMoving();
         }
         else if (currentPointIndex < 0)
         {
             currentPointIndex = 0;
+            Hide();
+            StopMoving();
         }
         else
         {
@@ -76,7 +96,7 @@ public class PathBallScript : MonoBehaviour
         }
     }
 
-    public void ChangeSpeed(float speed)
+    public void SetSpeed(float speed)
     {
         this.speed = speed;
     }
@@ -99,13 +119,20 @@ public class PathBallScript : MonoBehaviour
     public void Init(int currentPointIndex, Color color)
     {
         this.currentPointIndex = currentPointIndex;
+        target = PathCollidersManager.GetColliderPosition(currentPointIndex);
         GetComponent<MeshRenderer>().material.color = color;
+        SetSpeed(1f);
         Show();
     }
 
     public void SetWaitCount(int waitCount)
     {
         this.waitCount = waitCount;
+    }
+
+    public bool GetIsShown()
+    {
+        return GetComponent<MeshRenderer>().enabled;
     }
 
     public int GetIndex()
@@ -130,8 +157,12 @@ public class PathBallScript : MonoBehaviour
 
     public void Show()
     {
-        isShown = true;
         GetComponent<MeshRenderer>().enabled = true;
+    }
+
+    public void Hide()
+    {
+        GetComponent<MeshRenderer>().enabled = false;
     }
 
     public void StopMoving()
@@ -142,22 +173,30 @@ public class PathBallScript : MonoBehaviour
     public void StartMoving()
     {
         canMove = true;
-        target = PathCollidersManager.GetColliderPosition(currentPointIndex);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        string tag = other.gameObject.tag;
+
+        if (tag == "EntrancePoint" && pathMovingDirection == PathMovingDirection.Forward)
+        {
+            if (index == BallsManager.GetCount() / 3)
+            {
+                BallsManager.SetBallsSpeed(1f);
+            }
+            
+            Show();
+        }
     }
 
     void OnTriggerExit(Collider other)
     {
         string tag = other.gameObject.tag;
-
-        if (tag == "PathBall")
+        
+        if (tag == "EntrancePoint" && pathMovingDirection == PathMovingDirection.Backward)
         {
-            int ballAheadIndex = index - 1;
-
-            if (currentPointIndex == 0 && (ballAheadIndex < 0 || ballAheadIndex == other.gameObject.GetComponent<PathBallScript>().index))
-            {
-                Show();
-                StartMoving();
-            }
+            Hide();
         }
     }
 
