@@ -37,6 +37,8 @@ public class PathBallScript : MonoBehaviour
     {
         if (canMove)
         {
+            transform.Rotate(Vector3.up * Time.deltaTime * 100, Space.World);
+
             float step = speed * Time.deltaTime;
             traveledDistance += speed * Time.deltaTime;
 

@@ -74,7 +74,7 @@ public class BallsPathScript : MonoBehaviour
         Vector3 differnce = (firstPoint - secondPoint).normalized;
         Vector3 spawnPoint = firstPoint + differnce * pathBallPrefab.transform.localScale.x * (index + 1);
 
-        GameObject ball = (GameObject)Instantiate(pathBallPrefab, spawnPoint, Quaternion.identity);
+        GameObject ball = (GameObject)Instantiate(pathBallPrefab, spawnPoint, UnityEngine.Random.rotation);
 
         ball.GetComponent<PathBallScript>().ChangeCurrentPointIndex();
         ball.GetComponent<PathBallScript>().StartMoving();
@@ -84,7 +84,7 @@ public class BallsPathScript : MonoBehaviour
 
     public void InsertBall(int index, int currentPointIndex, Vector3 position, Color color, bool rearHit)
     {
-        GameObject ball = (GameObject)Instantiate(pathBallPrefab, position, Quaternion.identity);
+        GameObject ball = (GameObject)Instantiate(pathBallPrefab, position, UnityEngine.Random.rotation);
         InsertBall(index, currentPointIndex, ball, color, rearHit);
     }
 

@@ -23,6 +23,8 @@ public class BallScript : MonoBehaviour
 
     void FixedUpdate()
     {
+        transform.Rotate(transform.forward * Time.deltaTime * 100);
+
         float step = speed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, target, step);
 
