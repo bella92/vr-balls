@@ -5,16 +5,16 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C15D3EC3-0834-E19F-3ED6-1037C7987C3F}</ProjectGuid>
+    <ProjectGuid>{B942EA6A-AC23-137B-DE05-1F09574887BC}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Assembly-CSharp-firstpass</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
     <CompilerResponseFile></CompilerResponseFile>
-    <UnityProjectType>Game:1</UnityProjectType>
+    <UnityProjectType>GamePlugins:3</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>5.3.4f1</UnityVersion>
     <RootNamespace></RootNamespace>
@@ -63,48 +63,50 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Cardboard\Scripts\Audio\CardboardAudio.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\Audio\CardboardAudioListener.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\Audio\CardboardAudioRoom.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\Audio\CardboardAudioSource.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\Cardboard.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\CardboardEye.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\CardboardHead.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\CardboardPostRender.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\CardboardPreRender.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\CardboardProfile.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\GazeInputModule.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\Pose3D.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\StereoController.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\StereoRenderEffect.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\UI\CardboardGaze.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\UI\CardboardReticle.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\UI\ICardboardGazePointer.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\UI\ICardboardGazeResponder.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\VRDevices\BaseAndroidDevice.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\VRDevices\BaseCardboardDevice.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\VRDevices\BaseVRDevice.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\VRDevices\CardboardAndroidDevice.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\VRDevices\CardboardiOSDevice.cs" />
-    <Compile Include="Assets\Cardboard\Scripts\VRDevices\UnityEditorDevice.cs" />
-    <Compile Include="Assets\Scripts\BallScript.cs" />
-    <Compile Include="Assets\Scripts\BallsPathScript.cs" />
-    <Compile Include="Assets\Scripts\CameraScript.cs" />
-    <Compile Include="Assets\Scripts\ExplosionScript.cs" />
-    <Compile Include="Assets\Scripts\MainBallScript.cs" />
-    <Compile Include="Assets\Scripts\ObjectPoolerScript.cs" />
-    <Compile Include="Assets\Scripts\PathBallScript.cs" />
-    <Compile Include="Assets\Scripts\PathCollidersManager.cs" />
-    <Compile Include="Assets\Scripts\PathInsertStopperScript.cs" />
-    <Compile Include="Assets\Scripts\PathMovingDirection.cs" />
-    <Compile Include="Assets\Scripts\PathRemoveStopperScript.cs" />
-    <Compile Include="Assets\iTweenEditor\Examples\StartAndStopTween.cs" />
-    <Compile Include="Assets\iTweenEditor\Helper Classes\EventParamMappings.cs" />
-    <Compile Include="Assets\iTweenEditor\Helper Classes\Vector3OrTransform.cs" />
-    <Compile Include="Assets\iTweenEditor\Helper Classes\Vector3OrTransformArray.cs" />
-    <Compile Include="Assets\iTweenEditor\iTween.cs" />
-    <Compile Include="Assets\iTweenEditor\iTweenEvent.cs" />
-    <Compile Include="Assets\iTweenEditor\iTweenPath.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\AxisTouchButton.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\ButtonHandler.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\CrossPlatformInputManager.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\InputAxisScrollbar.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\Joystick.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\MobileControlRig.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\PlatformSpecific\MobileInput.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\PlatformSpecific\StandaloneInput.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\TiltInput.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\TouchPad.cs" />
+    <Compile Include="Assets\Standard Assets\CrossPlatformInput\Scripts\VirtualInput.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\AfterburnerPhysicsForce.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\ExplosionFireAndDebris.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\ExplosionPhysicsForce.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\Explosive.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\ExtinguishableParticleSystem.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\FireLight.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\Hose.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\ParticleSystemMultiplier.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\SmokeParticles.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\WaterHoseParticles.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\ActivateTrigger.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\AutoMobileShaderSwitch.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\AutoMoveAndRotate.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\CameraRefocus.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\CurveControlledBob.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\DragRigidbody.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\DynamicShadowSettings.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\EventSystemChecker.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\FOVKick.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\FPSCounter.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\FollowTarget.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\ForcedReset.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\LerpControlledBob.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\ObjectResetter.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\ParticleSystemDestroyer.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\PlatformSpecificContent.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\SimpleActivatorMenu.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\SimpleMouseRotator.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\SmoothFollow.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\TimedObjectActivator.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\TimedObjectDestructor.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\WaypointCircuit.cs" />
+    <Compile Include="Assets\Standard Assets\Utility\WaypointProgressTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Cardboard\Distortion\CardboardDistortion.cginc" />
@@ -112,6 +114,11 @@
     <None Include="Assets\Cardboard\Resources\UI\CardboardReticleShader.shader" />
     <None Include="Assets\Cardboard\Resources\UnlitTexture.shader" />
     <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
+    <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
+    <None Include="Assets\Standard Assets\ParticleSystems\ParticleSystemsGuidelines.txt" />
+    <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAdd.shader" />
+    <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAddSoft.shader" />
+    <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAlpha.shader" />
     <None Include="Assets\iTweenEditor\README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2012\UnityVS.CSharp.targets" />

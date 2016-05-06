@@ -13,18 +13,35 @@ public class BallScript : MonoBehaviour
     private float fireTargetSpeed = 10.0f;
     private bool rearHit = false;
     private BallsPathScript ballsPath;
+    private ParticleSystem particleSystem;
 
     public GameObject pathInsertStopperPrefab;
 
     void Start()
     {
         ballsPath = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
+        particleSystem = gameObject.GetComponentInChildren<ParticleSystem>();
+    }
+
+    void OnEnable()
+    {
+        Invoke("Destroy", 10f);
+        ballHit = false;
+        rearHit = false;
+    }
+
+    void Destroy()
+    {
+        gameObject.SetActive(false);
+    }
+
+    void OnDisable()
+    {
+        CancelInvoke();
     }
 
     void FixedUpdate()
     {
-        transform.Rotate(transform.forward * Time.deltaTime * 100);
-
         float step = speed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, target, step);
 
@@ -34,7 +51,7 @@ public class BallScript : MonoBehaviour
 
             if (distance <= Time.deltaTime)
             {
-                Destroy(gameObject);
+                Destroy();
 
                 Color color = GetComponent<MeshRenderer>().material.color;
                 BallsPathScript ballsPathScript = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
@@ -63,6 +80,7 @@ public class BallScript : MonoBehaviour
             if (isShown)
             {
                 ballHit = true;
+                particleSystem.Stop();
 
                 Vector3 target = other.gameObject.transform.position;
                 Instantiate(pathInsertStopperPrefab, target, Quaternion.identity);
