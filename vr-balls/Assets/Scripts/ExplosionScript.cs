@@ -3,31 +3,11 @@ using System.Collections;
 
 public class ExplosionScript : MonoBehaviour
 {
-    private ParticleSystem[] particleSystems;
-
-    void Start()
-    {
-        particleSystems = GetComponentsInChildren<ParticleSystem>();
-    }
+    public float destroyDelay = 3.0f;
 
     void OnEnable()
     {
-        if (particleSystems != null)
-        {
-            float slowestDuration = float.MaxValue;
-
-            for (int i = 0; i < particleSystems.Length; i++)
-            {
-                particleSystems[i].Play();
-
-                if (particleSystems[i].duration < slowestDuration)
-                {
-                    slowestDuration = particleSystems[i].duration;
-                }
-            }
-
-            Invoke("Destroy", slowestDuration);
-        }
+        Invoke("Destroy", destroyDelay);
     }
 
     void Destroy()

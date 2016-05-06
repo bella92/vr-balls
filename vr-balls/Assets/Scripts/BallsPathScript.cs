@@ -34,7 +34,7 @@ public class BallsPathScript : MonoBehaviour
             if (i == entranceIndex)
             {
                 pathCollider.tag = "EntrancePoint";
-                pathCollider.GetComponent<MeshRenderer>().enabled = true;
+                //pathCollider.GetComponent<MeshRenderer>().enabled = true;
             }
         }
 

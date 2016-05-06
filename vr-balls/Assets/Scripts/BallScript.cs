@@ -14,6 +14,7 @@ public class BallScript : MonoBehaviour
     private bool rearHit = false;
     private BallsPathScript ballsPath;
     private ParticleSystem particleSystem;
+    private ObjectPoolerScript explosionsPoolerScript;
 
     public GameObject pathInsertStopperPrefab;
 
@@ -21,6 +22,7 @@ public class BallScript : MonoBehaviour
     {
         ballsPath = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
         particleSystem = gameObject.GetComponentInChildren<ParticleSystem>();
+        explosionsPoolerScript = GameObject.Find("ExplosionsPooler").GetComponent<ObjectPoolerScript>();
     }
 
     void OnEnable()
@@ -109,6 +111,20 @@ public class BallScript : MonoBehaviour
 
                 SetTarget(target);
             }
+        }
+        else if (tag == "Obstacle")
+        {
+            GameObject explosion = explosionsPoolerScript.GetPooledObject(transform.position, transform.rotation);
+
+            if (explosion != null)
+            {
+                explosion.transform.LookAt(other.transform.position);
+                explosion.transform.Rotate(Vector3.right, 270);
+
+                explosion.SetActive(true);
+            }
+
+            Destroy();
         }
     }
 }
