@@ -8,8 +8,9 @@ public class BallsPathScript : MonoBehaviour
     public GameObject pathBallPrefab;
     public GameObject pathTrailPrefab;
     public GameObject pathColliderPrefab;
+    public GameObject entrancePrefab;
     public int collidersDensity = 20;
-    public float hiddenPart = 0.3f;
+    public float hiddenPart = 0.05f;
     public GameObject pathRemoveStopper;
 
     private iTweenPath path;
@@ -22,7 +23,6 @@ public class BallsPathScript : MonoBehaviour
         Vector3[] vector3s = PathControlPointGenerator(nodes);
 
         int collidersAmount = nodes.Length * collidersDensity;
-        int entranceIndex = Mathf.CeilToInt(collidersAmount * hiddenPart);
 
         for (int i = 1; i <= collidersAmount; i++)
         {
@@ -30,13 +30,12 @@ public class BallsPathScript : MonoBehaviour
             Vector3 currentPoint = Interp(vector3s, pm);
             GameObject pathCollider = (GameObject)Instantiate(pathColliderPrefab, currentPoint, Quaternion.identity);
             PathCollidersManager.AddCollider(pathCollider);
-
-            if (i == entranceIndex)
-            {
-                pathCollider.tag = "EntrancePoint";
-                //pathCollider.GetComponent<MeshRenderer>().enabled = true;
-            }
         }
+
+        int entranceIndex = Mathf.FloorToInt(collidersAmount * hiddenPart);
+        SetEnd(entranceIndex);
+        int exitIndex = collidersAmount - 1 - entranceIndex;
+        SetEnd(exitIndex);
 
         //InitTrail();
 
@@ -64,6 +63,14 @@ public class BallsPathScript : MonoBehaviour
     {
         Vector3 spawnPoint = PathCollidersManager.GetColliderPosition(0);
         Instantiate(pathTrailPrefab, spawnPoint, Quaternion.identity);
+    }
+
+    private void SetEnd(int index)
+    {
+        Vector3 entrancePoint = PathCollidersManager.GetColliderPosition(index);
+        Vector3 nextPoint = PathCollidersManager.GetColliderPosition(index + 1);
+        Quaternion rotation = Quaternion.LookRotation(nextPoint - entrancePoint);
+        Instantiate(entrancePrefab, entrancePoint, rotation);
     }
 
     private void AddBall(int index)

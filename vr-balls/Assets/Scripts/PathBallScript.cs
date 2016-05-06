@@ -177,7 +177,7 @@ public class PathBallScript : MonoBehaviour
     {
         string tag = other.gameObject.tag;
 
-        if (tag == "EntrancePoint" && pathMovingDirection == PathMovingDirection.Forward)
+        if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Forward)
         {
             if (index == ballsPath.GetCount() / 3)
             {
@@ -192,7 +192,7 @@ public class PathBallScript : MonoBehaviour
     {
         string tag = other.gameObject.tag;
         
-        if (tag == "EntrancePoint" && pathMovingDirection == PathMovingDirection.Backward)
+        if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Backward)
         {
             Hide();
         }
