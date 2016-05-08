@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using UnityEditor;
 
 public class BallScript : MonoBehaviour
 {
@@ -14,12 +13,33 @@ public class BallScript : MonoBehaviour
     private float fireTargetSpeed = 10.0f;
     private bool rearHit = false;
     private BallsPathScript ballsPath;
+    private ParticleSystem particleSystem;
+    private ObjectPoolerScript explosionsPoolerScript;
 
     public GameObject pathInsertStopperPrefab;
 
     void Start()
     {
         ballsPath = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
+        particleSystem = gameObject.GetComponentInChildren<ParticleSystem>();
+        explosionsPoolerScript = GameObject.Find("ExplosionsPooler").GetComponent<ObjectPoolerScript>();
+    }
+
+    void OnEnable()
+    {
+        Invoke("Destroy", 10f);
+        ballHit = false;
+        rearHit = false;
+    }
+
+    void Destroy()
+    {
+        gameObject.SetActive(false);
+    }
+
+    void OnDisable()
+    {
+        CancelInvoke();
     }
 
     void FixedUpdate()
@@ -33,7 +53,7 @@ public class BallScript : MonoBehaviour
 
             if (distance <= Time.deltaTime)
             {
-                Destroy(gameObject);
+                Destroy();
 
                 Color color = GetComponent<MeshRenderer>().material.color;
                 BallsPathScript ballsPathScript = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
@@ -62,6 +82,7 @@ public class BallScript : MonoBehaviour
             if (isShown)
             {
                 ballHit = true;
+                particleSystem.Stop();
 
                 Vector3 target = other.gameObject.transform.position;
                 Instantiate(pathInsertStopperPrefab, target, Quaternion.identity);
@@ -90,6 +111,20 @@ public class BallScript : MonoBehaviour
 
                 SetTarget(target);
             }
+        }
+        else if (tag == "Obstacle")
+        {
+            GameObject explosion = explosionsPoolerScript.GetPooledObject(transform.position, transform.rotation);
+
+            if (explosion != null)
+            {
+                explosion.transform.LookAt(other.transform.position);
+                explosion.transform.Rotate(Vector3.right, 270);
+
+                explosion.SetActive(true);
+            }
+
+            Destroy();
         }
     }
 }

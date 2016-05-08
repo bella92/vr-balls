@@ -3,14 +3,15 @@ using System.Collections;
 
 public class MainBallScript : MonoBehaviour
 {
-    public GameObject ballPrefab;
-
+    private ObjectPoolerScript ballsPoolerScript;
     private Cardboard cardboard;
     private CardboardHead cardboardHead;
     private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
 
     void Start()
     {
+        ballsPoolerScript = GameObject.Find("BallsPooler").GetComponent<ObjectPoolerScript>();
+
         ChangeColor();
         cardboard = FindObjectOfType<Cardboard>();
         cardboardHead = FindObjectOfType<CardboardHead>();
@@ -35,9 +36,14 @@ public class MainBallScript : MonoBehaviour
             position = cardboardHead.transform.position + direction * 1.5f;
         }
 
-        GameObject ball = (GameObject)Instantiate(ballPrefab, position, Quaternion.identity);
-        ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
-        ball.GetComponent<BallScript>().SetTarget(direction * 1000, true);
+        GameObject ball = ballsPoolerScript.GetPooledObject(transform.position, transform.rotation);
+
+        if (ball != null)
+        {
+            ball.SetActive(true);
+            ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
+            ball.GetComponent<BallScript>().SetTarget(direction * 1000, true);
+        }
     }
 
     void ChangeColor()

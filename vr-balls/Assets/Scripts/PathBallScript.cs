@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
 
 public class PathBallScript : MonoBehaviour
@@ -9,6 +8,7 @@ public class PathBallScript : MonoBehaviour
     public int index = -1;
     public int currentPointIndex = 0;
 
+    private ObjectPoolerScript explosionsPoolerScript;
     private float speed = 7f;
     private BallsPathScript ballsPath;
     private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
@@ -27,6 +27,7 @@ public class PathBallScript : MonoBehaviour
     void Start()
     {
         ballsPath = GameObject.Find("BallsPath").GetComponent<BallsPathScript>();
+        explosionsPoolerScript = GameObject.Find("ExplosionsPooler").GetComponent<ObjectPoolerScript>();
     }
 
     void FixedUpdate()
@@ -38,6 +39,8 @@ public class PathBallScript : MonoBehaviour
     {
         if (canMove)
         {
+            transform.Rotate(Vector3.up * Time.deltaTime * 100, Space.World);
+
             float step = speed * Time.deltaTime;
             traveledDistance += speed * Time.deltaTime;
 
@@ -174,7 +177,7 @@ public class PathBallScript : MonoBehaviour
     {
         string tag = other.gameObject.tag;
 
-        if (tag == "EntrancePoint" && pathMovingDirection == PathMovingDirection.Forward)
+        if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Forward)
         {
             if (index == ballsPath.GetCount() / 3)
             {
@@ -189,7 +192,7 @@ public class PathBallScript : MonoBehaviour
     {
         string tag = other.gameObject.tag;
         
-        if (tag == "EntrancePoint" && pathMovingDirection == PathMovingDirection.Backward)
+        if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Backward)
         {
             Hide();
         }
@@ -205,6 +208,13 @@ public class PathBallScript : MonoBehaviour
 
     public void SelfDestroy()
     {
+        GameObject explosion = explosionsPoolerScript.GetPooledObject(transform.position, transform.rotation);
+
+        if (explosion != null)
+        {
+            explosion.SetActive(true);
+        }
+
         Destroy(gameObject);
     }
 }
