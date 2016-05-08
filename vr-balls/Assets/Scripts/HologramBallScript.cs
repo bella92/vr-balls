@@ -1,20 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MainBallScript : MonoBehaviour
+public class HologramBallScript : MonoBehaviour
 {
     private ObjectPoolerScript ballsPoolerScript;
     private Cardboard cardboard;
     private CardboardHead cardboardHead;
+    private GameObject mainCamera;
     private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
+    private MeshRenderer[] childrenMeshRenderers;
+    private Color currentColor;
 
     void Start()
     {
+        childrenMeshRenderers = GetComponentsInChildren<MeshRenderer>();
         ballsPoolerScript = GameObject.Find("BallsPooler").GetComponent<ObjectPoolerScript>();
 
         ChangeColor();
         cardboard = FindObjectOfType<Cardboard>();
         cardboardHead = FindObjectOfType<CardboardHead>();
+        mainCamera = GameObject.Find("MainCamera");
     }
 
     void Update()
@@ -28,20 +33,27 @@ public class MainBallScript : MonoBehaviour
 
     void Fire()
     {
-        Vector3 position = transform.position;
-        Vector3 direction = transform.forward;
+        Vector3 direction = Vector3.forward;
+        Vector3 position = Vector3.zero;
+
+        if (mainCamera)
+        {
+            direction = mainCamera.transform.forward;
+            position = mainCamera.transform.position;
+        }
+
         if (cardboardHead)
         {
             direction = cardboardHead.Gaze.direction;
-            position = cardboardHead.transform.position + direction * 1.5f;
+            position = cardboardHead.transform.position;
         }
 
-        GameObject ball = ballsPoolerScript.GetPooledObject(transform.position, transform.rotation);
+        GameObject ball = ballsPoolerScript.GetPooledObject(position + direction * 1.5f, Quaternion.LookRotation(direction));
 
         if (ball != null)
         {
             ball.SetActive(true);
-            ball.GetComponent<MeshRenderer>().material.color = GetComponent<MeshRenderer>().material.color;
+            ball.GetComponent<MeshRenderer>().material.color = currentColor;
             ball.GetComponent<BallScript>().SetTarget(direction * 1000, true);
         }
     }
@@ -49,6 +61,11 @@ public class MainBallScript : MonoBehaviour
     void ChangeColor()
     {
         int randomIndex = Random.Range(0, colors.Length);
-        GetComponent<MeshRenderer>().material.color = colors[randomIndex];
+        currentColor = colors[randomIndex];
+
+        for (int i = 0; i < childrenMeshRenderers.Length; i++)
+        {
+            childrenMeshRenderers[i].material.color = currentColor;
+        }
     }
 }

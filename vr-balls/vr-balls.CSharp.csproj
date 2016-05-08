@@ -91,14 +91,13 @@
     <Compile Include="Assets\Scripts\BallsPathScript.cs" />
     <Compile Include="Assets\Scripts\CameraScript.cs" />
     <Compile Include="Assets\Scripts\ExplosionScript.cs" />
-    <Compile Include="Assets\Scripts\MainBallScript.cs" />
+    <Compile Include="Assets\Scripts\HologramBallScript.cs" />
     <Compile Include="Assets\Scripts\ObjectPoolerScript.cs" />
     <Compile Include="Assets\Scripts\PathBallScript.cs" />
     <Compile Include="Assets\Scripts\PathCollidersManager.cs" />
     <Compile Include="Assets\Scripts\PathInsertStopperScript.cs" />
     <Compile Include="Assets\Scripts\PathMovingDirection.cs" />
     <Compile Include="Assets\Scripts\PathRemoveStopperScript.cs" />
-    <Compile Include="Assets\Scripts\SerialUISummoner.cs" />
     <Compile Include="Assets\iTweenEditor\Examples\StartAndStopTween.cs" />
     <Compile Include="Assets\iTweenEditor\Helper Classes\EventParamMappings.cs" />
     <Compile Include="Assets\iTweenEditor\Helper Classes\Vector3OrTransform.cs" />
