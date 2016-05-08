@@ -9,6 +9,7 @@ public class BallsPathScript : MonoBehaviour
     public GameObject pathTrailPrefab;
     public GameObject pathColliderPrefab;
     public GameObject entrancePrefab;
+    public GameObject exitPrefab;
     public int collidersDensity = 20;
     public float hiddenPart = 0.05f;
     public GameObject pathRemoveStopper;
@@ -33,9 +34,9 @@ public class BallsPathScript : MonoBehaviour
         }
 
         int entranceIndex = Mathf.FloorToInt(collidersAmount * hiddenPart);
-        SetEnd(entranceIndex);
+        SetEnd(entranceIndex, entrancePrefab);
         int exitIndex = collidersAmount - 1 - entranceIndex;
-        SetEnd(exitIndex);
+        SetEnd(exitIndex, exitPrefab);
 
         //InitTrail();
 
@@ -65,12 +66,12 @@ public class BallsPathScript : MonoBehaviour
         Instantiate(pathTrailPrefab, spawnPoint, Quaternion.identity);
     }
 
-    private void SetEnd(int index)
+    private void SetEnd(int index, GameObject prefab)
     {
         Vector3 entrancePoint = PathCollidersManager.GetColliderPosition(index);
         Vector3 nextPoint = PathCollidersManager.GetColliderPosition(index + 1);
         Quaternion rotation = Quaternion.LookRotation(nextPoint - entrancePoint);
-        Instantiate(entrancePrefab, entrancePoint, rotation);
+        Instantiate(prefab, entrancePoint, rotation);
     }
 
     private void AddBall(int index)

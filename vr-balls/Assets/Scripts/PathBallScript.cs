@@ -51,6 +51,27 @@ public class PathBallScript : MonoBehaviour
             {
                 ChangeCurrentPointIndex();
             }
+
+            GameObject entrance = GameObject.FindGameObjectWithTag("Entrance");
+            float entranceDistance = Mathf.Abs(Vector3.Distance(transform.position, entrance.transform.position));
+
+            if (entranceDistance <= step / 2)
+            {
+                if (pathMovingDirection == PathMovingDirection.Forward)
+                {
+                    Animator animator = GetComponent<Animator>();
+                    animator.SetTrigger("PopUp");
+
+                    if (index == ballsPath.GetCount() / 3)
+                    {
+                        ballsPath.SetBallsSpeed(1f);
+                    }
+                }
+                else
+                {
+                    Hide();
+                }
+            }
         }
     }
 
@@ -173,30 +194,33 @@ public class PathBallScript : MonoBehaviour
         canMove = true;
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        string tag = other.gameObject.tag;
+    //void OnTriggerEnter(Collider other)
+    //{
+    //    string tag = other.gameObject.tag;
 
-        if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Forward)
-        {
-            if (index == ballsPath.GetCount() / 3)
-            {
-                ballsPath.SetBallsSpeed(1f);
-            }
+        //if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Forward)
+        //{
+        //    Animator animator = GetComponent<Animator>();
+        //    animator.SetTrigger("PopUp");
 
-            Show();
-        }
-    }
+        //    if (index == ballsPath.GetCount() / 3)
+        //    {
+        //        ballsPath.SetBallsSpeed(1f);
+        //    }
 
-    void OnTriggerExit(Collider other)
-    {
-        string tag = other.gameObject.tag;
+        //    //Show();
+        //}
+    //}
+
+    //void OnTriggerExit(Collider other)
+    //{
+    //    string tag = other.gameObject.tag;
         
-        if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Backward)
-        {
-            Hide();
-        }
-    }
+    //    if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Backward)
+    //    {
+    //        Hide();
+    //    }
+    //}
 
     private void SetRandomColor()
     {
