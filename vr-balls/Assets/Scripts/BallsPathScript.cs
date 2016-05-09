@@ -8,8 +8,7 @@ public class BallsPathScript : MonoBehaviour
     public GameObject pathBallPrefab;
     public GameObject pathTrailPrefab;
     public GameObject pathColliderPrefab;
-    public GameObject entrancePrefab;
-    public GameObject exitPrefab;
+    public GameObject beamerPrefab;
     public int collidersDensity = 20;
     public float hiddenPart = 0.05f;
     public GameObject pathRemoveStopper;
@@ -33,10 +32,10 @@ public class BallsPathScript : MonoBehaviour
             PathCollidersManager.AddCollider(pathCollider);
         }
 
-        int entranceIndex = Mathf.FloorToInt(collidersAmount * hiddenPart);
-        SetEnd(entranceIndex, entrancePrefab);
-        int exitIndex = collidersAmount - 1 - entranceIndex;
-        SetEnd(exitIndex, exitPrefab);
+        int startIndex = Mathf.FloorToInt(collidersAmount * hiddenPart);
+        SetStartBeamer(startIndex);
+        int endIndex = Mathf.CeilToInt(collidersAmount - 1 - startIndex);
+        SetEndBeamer(endIndex);
 
         //InitTrail();
 
@@ -67,12 +66,24 @@ public class BallsPathScript : MonoBehaviour
         Instantiate(pathTrailPrefab, spawnPoint, Quaternion.identity);
     }
 
-    private void SetEnd(int index, GameObject prefab)
+    private void SetStartBeamer(int index)
     {
-        Vector3 entrancePoint = PathCollidersManager.GetColliderPosition(index);
-        Vector3 nextPoint = PathCollidersManager.GetColliderPosition(index + 1);
-        Quaternion rotation = Quaternion.LookRotation(nextPoint - entrancePoint);
-        Instantiate(prefab, entrancePoint, rotation);
+        Vector3 position = PathCollidersManager.GetColliderPosition(index);
+        Vector3 nextPosition = PathCollidersManager.GetColliderPosition(index + 1);
+        Quaternion rotation = Quaternion.LookRotation(nextPosition - position);
+
+        GameObject beamer = (GameObject)Instantiate(beamerPrefab, position, rotation);
+        beamer.tag = "StartBeamer";
+    }
+
+    private void SetEndBeamer(int index)
+    {
+        Vector3 position = PathCollidersManager.GetColliderPosition(index);
+        Vector3 previousPosition = PathCollidersManager.GetColliderPosition(index - 1);
+        Quaternion rotation = Quaternion.LookRotation(previousPosition - position);
+
+        GameObject beamer = (GameObject)Instantiate(beamerPrefab, position, rotation);
+        beamer.tag = "EndBeamer";
     }
 
     private void AddBall(int index)

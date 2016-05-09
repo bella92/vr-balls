@@ -19,6 +19,8 @@ public class PathBallScript : MonoBehaviour
     private bool toBeStopped = false;
     private float traveledDistance = 0f;
 
+    private bool test = false;
+
     void Awake()
     {
         SetRandomColor();
@@ -67,7 +69,7 @@ public class PathBallScript : MonoBehaviour
         else if (currentPointIndex < 0)
         {
             currentPointIndex = 0;
-            //Hide();
+            Hide();
             StopMoving();
         }
         else
@@ -177,7 +179,7 @@ public class PathBallScript : MonoBehaviour
     {
         string tag = other.gameObject.tag;
 
-        if (tag == "Entrance")
+        if (tag == "StartBeamer")
         {
             if (pathMovingDirection == PathMovingDirection.Forward)
             {
@@ -190,7 +192,12 @@ public class PathBallScript : MonoBehaviour
                 animator.SetFloat("Speed", speed);
                 animator.SetBool("Shown", true);
 
-                //Show();
+                Animator startBeamerAnimator = other.GetComponentInChildren<Animator>();
+                startBeamerAnimator.SetFloat("Speed", speed);
+                startBeamerAnimator.SetBool("Shake", test);
+                test = !test;
+
+                Show();
             }
             else
             {
@@ -198,7 +205,41 @@ public class PathBallScript : MonoBehaviour
                 animator.SetFloat("Speed", speed);
                 animator.SetBool("Shown", false);
 
-                //Hide();
+                Invoke("Hide", 0.4f);
+            }
+        }
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        string tag = other.gameObject.tag;
+
+        if (tag == "StartBeamer")
+        {
+            if (pathMovingDirection == PathMovingDirection.Backward)
+            {
+                Animator animator = GetComponent<Animator>();
+                animator.SetFloat("Speed", speed);
+                animator.SetBool("Shown", false);
+
+                Invoke("Hide", 0.4f);
+            }
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        string tag = other.gameObject.tag;
+
+        if (tag == "StartBeamer")
+        {
+            if (pathMovingDirection == PathMovingDirection.Backward)
+            {
+                test = !test;
+
+                Animator startBeamerAnimator = other.GetComponentInChildren<Animator>();
+                startBeamerAnimator.SetFloat("Speed", speed);
+                startBeamerAnimator.SetBool("Shake", test);
             }
         }
     }
