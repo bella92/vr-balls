@@ -50,7 +50,8 @@ public class BallsPathScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            SetBallsPathMovingDirection(PathMovingDirection.Forward);
+            StopMovingBalls();
+            SetBallsPathMovingDirection(PathMovingDirection.Backward);
             StartMovingBalls();
         }
 

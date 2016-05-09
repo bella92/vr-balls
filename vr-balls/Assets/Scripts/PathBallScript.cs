@@ -67,7 +67,7 @@ public class PathBallScript : MonoBehaviour
         else if (currentPointIndex < 0)
         {
             currentPointIndex = 0;
-            Hide();
+            //Hide();
             StopMoving();
         }
         else
@@ -177,24 +177,29 @@ public class PathBallScript : MonoBehaviour
     {
         string tag = other.gameObject.tag;
 
-        if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Forward)
+        if (tag == "Entrance")
         {
-            if (index == ballsPath.GetCount() / 3)
+            if (pathMovingDirection == PathMovingDirection.Forward)
             {
-                ballsPath.SetBallsSpeed(1f);
+                if (index == ballsPath.GetCount() / 3)
+                {
+                    ballsPath.SetBallsSpeed(1f);
+                }
+
+                Animator animator = GetComponent<Animator>();
+                animator.SetFloat("Speed", speed);
+                animator.SetBool("Shown", true);
+
+                //Show();
             }
+            else
+            {
+                Animator animator = GetComponent<Animator>();
+                animator.SetFloat("Speed", speed);
+                animator.SetBool("Shown", false);
 
-            Show();
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        string tag = other.gameObject.tag;
-
-        if (tag == "Entrance" && pathMovingDirection == PathMovingDirection.Backward)
-        {
-            Hide();
+                //Hide();
+            }
         }
     }
 
