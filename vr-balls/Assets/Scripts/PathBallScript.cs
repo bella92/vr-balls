@@ -1,5 +1,5 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PathBallScript : MonoBehaviour
 {
@@ -18,8 +18,6 @@ public class PathBallScript : MonoBehaviour
     private Vector3 target;
     private bool toBeStopped = false;
     private float traveledDistance = 0f;
-
-    private bool test = false;
 
     void Awake()
     {
@@ -60,16 +58,10 @@ public class PathBallScript : MonoBehaviour
     {
         currentPointIndex += (int)pathMovingDirection;
 
-        if (currentPointIndex >= PathCollidersManager.GetCount())
-        {
-            //TODO: Game Over
-            currentPointIndex -= 1;
-            StopMoving();
-        }
-        else if (currentPointIndex < 0)
+        if (currentPointIndex < 0)
         {
             currentPointIndex = 0;
-            Hide();
+            //Hide();
             StopMoving();
         }
         else
@@ -192,11 +184,6 @@ public class PathBallScript : MonoBehaviour
                 animator.SetFloat("Speed", speed);
                 animator.SetBool("Shown", true);
 
-                Animator startBeamerAnimator = other.GetComponentInChildren<Animator>();
-                startBeamerAnimator.SetFloat("Speed", speed);
-                startBeamerAnimator.SetBool("Shake", test);
-                test = !test;
-
                 Show();
             }
             else
@@ -212,37 +199,54 @@ public class PathBallScript : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        string tag = other.gameObject.tag;
-
-        if (tag == "StartBeamer")
-        {
-            if (pathMovingDirection == PathMovingDirection.Backward)
-            {
-                Animator animator = GetComponent<Animator>();
-                animator.SetFloat("Speed", speed);
-                animator.SetBool("Shown", false);
-
-                Invoke("Hide", 0.4f);
-            }
-        }
+        //Baba(other);
     }
 
-    void OnTriggerExit(Collider other)
-    {
-        string tag = other.gameObject.tag;
+    //void OnTriggerExit(Collider other)
+    //{
+    //    string tag = other.gameObject.tag;
 
-        if (tag == "StartBeamer")
-        {
-            if (pathMovingDirection == PathMovingDirection.Backward)
-            {
-                test = !test;
+    //    if (tag == "StartBeamer")
+    //    {
+    //        if (pathMovingDirection == PathMovingDirection.Forward)
+    //        {
+    //            EditorApplication.isPaused = true;
 
-                Animator startBeamerAnimator = other.GetComponentInChildren<Animator>();
-                startBeamerAnimator.SetFloat("Speed", speed);
-                startBeamerAnimator.SetBool("Shake", test);
-            }
-        }
-    }
+    //            if (index == ballsPath.GetCount() / 3)
+    //            {
+    //                ballsPath.SetBallsSpeed(1f);
+    //            }
+
+    //            Animator animator = GetComponent<Animator>();
+    //            animator.SetFloat("Speed", speed);
+    //            animator.SetBool("Shown", true);
+
+    //            Animator startBeamerAnimator = other.GetComponentInChildren<Animator>();
+    //            startBeamerAnimator.SetFloat("Speed", speed);
+    //            startBeamerAnimator.SetBool("Shake", test);
+    //            test = !test;
+
+    //            Show();
+    //        }
+    //        else
+    //        {
+    //            if (pathMovingDirection == PathMovingDirection.Backward)
+    //            {
+    //                Animator animator = GetComponent<Animator>();
+    //                animator.SetFloat("Speed", speed);
+    //                animator.SetBool("Shown", false);
+
+    //                Invoke("Hide", 0.4f);
+
+    //                test = !test;
+
+    //                Animator startBeamerAnimator = other.GetComponentInChildren<Animator>();
+    //                startBeamerAnimator.SetFloat("Speed", speed);
+    //                startBeamerAnimator.SetBool("Shake", test);
+    //            }
+    //        }
+    //    }
+    //}
 
     private void SetRandomColor()
     {
