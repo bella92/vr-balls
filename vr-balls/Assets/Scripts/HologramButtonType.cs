@@ -1,4 +1,4 @@
-﻿public enum MenuHologramType
+﻿public enum HologramButtonType
 {
     Play,
     SwitchMode,
