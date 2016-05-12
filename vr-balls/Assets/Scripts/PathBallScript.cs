@@ -9,7 +9,7 @@ public class PathBallScript : MonoBehaviour
     public int currentPointIndex = 0;
 
     private ObjectPoolerScript explosionsPoolerScript;
-    private float speed = 7f;
+    private float speed = 1f;
     private BallsPathScript ballsPath;
     private Color[] colors = { Color.red, Color.blue, Color.green, Color.yellow };
     private bool isInserted = false;
@@ -175,13 +175,7 @@ public class PathBallScript : MonoBehaviour
         {
             if (pathMovingDirection == PathMovingDirection.Forward)
             {
-                if (index == ballsPath.GetCount() / 3)
-                {
-                    ballsPath.SetBallsSpeed(1f);
-                }
-
                 Animator animator = GetComponent<Animator>();
-                animator.SetFloat("Speed", speed);
                 animator.SetBool("Shown", true);
 
                 Show();
@@ -189,7 +183,6 @@ public class PathBallScript : MonoBehaviour
             else
             {
                 Animator animator = GetComponent<Animator>();
-                animator.SetFloat("Speed", speed);
                 animator.SetBool("Shown", false);
 
                 Invoke("Hide", 0.4f);

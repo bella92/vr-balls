@@ -1,22 +1,21 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class BeamerScript : MonoBehaviour
 {
-    private bool test = false;
-
     void OnTriggerEnter(Collider other)
     {
         string tag = other.gameObject.tag;
 
         if (tag == "PathBall")
         {
-            var speed = other.GetComponent<PathBallScript>().GetSpeed();
+            var isShown = other.GetComponent<PathBallScript>().GetIsShown();
 
-            Animator startBeamerAnimator = other.GetComponentInChildren<Animator>();
-            startBeamerAnimator.SetFloat("Speed", speed);
-
-            test = !test;
-            startBeamerAnimator.SetBool("Shake", test);
+            if (isShown)
+            {
+                Animator animator = GetComponentInChildren<Animator>();
+                animator.SetTrigger("Shake");
+            }
         }
     }
 }
